@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Augurio Colectivo · Cognición Aumentada</title>
+<style>
+  :root{
+    --bg:#0A0A0A;
+    --ink:#FFFFFF;
+    --soft:#8A8A88;
+    --hair:#242422;
+    --field:#141412;
+    --accent:#17F7A1;
+    --sans:"Helvetica Neue","Inter","Arial",sans-serif;
+    --mono:"IBM Plex Mono","Courier New",monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+  body{padding:24px;line-height:1.4}
+  a{color:inherit}
+  button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+  input,textarea,select{font-family:inherit;color:inherit;background:var(--field);border:1px solid var(--hair);border-radius:6px;padding:14px 16px;font-size:16px;line-height:1.45;width:100%;outline:none;transition:border-color .15s}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+  textarea{min-height:110px;resize:vertical}
+
+  /* topbar */
+  .top{position:fixed;top:20px;right:24px;display:flex;gap:10px;align-items:center;z-index:20}
+  .pill{background:var(--ink);color:var(--bg);border-radius:999px;padding:6px 14px;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;font-weight:600}
+  .year{font-family:var(--mono);font-size:11px;color:var(--soft);letter-spacing:.08em}
+  .spine{position:fixed;left:20px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;font-family:var(--mono);font-size:10px;letter-spacing:.2em;color:var(--soft);text-transform:uppercase;z-index:20}
+
+  /* container */
+  .wrap{max-width:1080px;margin:0 auto;padding:80px 60px 60px 60px}
+  @media (max-width:720px){ .wrap{padding:80px 8px 40px 40px} body{padding:16px} }
+
+  /* back */
+  .back{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);text-decoration:none;margin-bottom:36px;transition:color .15s}
+  .back:hover{color:var(--accent)}
+  .back .arrow{font-size:13px}
+  .back.solid{background:var(--ink);color:var(--bg);padding:8px 14px;border-radius:999px;transition:filter .15s}
+  .back.solid:hover{color:var(--bg);filter:brightness(.88)}
+
+  /* headings */
+  .kicker{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+  h1.big{font-size:clamp(38px,7vw,84px);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;font-weight:700;margin-bottom:14px}
+  h2.big{font-size:clamp(28px,4.4vw,52px);line-height:1;letter-spacing:-.015em;text-transform:uppercase;font-weight:700}
+  .num{font-family:var(--mono);font-size:11px;color:var(--soft);letter-spacing:.06em;vertical-align:super;margin-right:6px}
+  .ctx{color:var(--soft);font-size:15px;line-height:1.5;margin:14px 0 18px;max-width:640px}
+
+  /* portada */
+  .portada{min-height:70vh;display:flex;flex-direction:column;justify-content:center}
+  .portada .op{display:flex;flex-direction:column;gap:14px;margin-top:36px;max-width:520px}
+  .btn{display:inline-flex;align-items:center;justify-content:space-between;padding:18px 22px;border:1px solid var(--hair);border-radius:8px;font-size:16px;transition:border-color .15s,background .15s,color .15s;text-decoration:none;color:var(--ink);background:var(--field)}
+  .btn:hover{border-color:var(--accent)}
+  .btn .arrow{color:var(--accent);font-family:var(--mono)}
+  .btn.primary{background:var(--accent);color:#00120a;border-color:var(--accent);font-weight:600}
+  .btn.primary .arrow{color:#00120a}
+  .btn.primary:hover{filter:brightness(1.05)}
+
+  /* captura */
+  .rolbar{display:flex;gap:10px;align-items:center;margin-bottom:44px;flex-wrap:wrap}
+  .rolbar label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+  .rolbar label.accent{color:var(--accent)}
+  .rolbar select{max-width:220px}
+  .q{margin-bottom:44px}
+  .q .qtitle{font-size:clamp(24px,3.4vw,40px);line-height:1.05;letter-spacing:-.01em;text-transform:uppercase;font-weight:700;margin-bottom:10px}
+  .q .qtitle .num{font-size:12px}
+  .send-wrap{display:flex;justify-content:flex-end;margin-top:12px}
+  .send{background:var(--accent);color:#00120a;padding:16px 28px;border-radius:8px;font-size:16px;font-weight:600;letter-spacing:.02em}
+  .send:disabled{opacity:.4;cursor:not-allowed}
+  .msg{margin-top:24px;padding:14px 18px;border-radius:8px;border:1px solid var(--hair);background:var(--field);font-size:14px;color:var(--soft)}
+  .msg.ok{border-color:var(--accent);color:var(--accent)}
+  .msg.err{border-color:#F26D6D;color:#F26D6D}
+
+  /* thanks */
+  .thanks{min-height:60vh;display:flex;flex-direction:column;justify-content:center}
+  .thanks h1{font-size:clamp(40px,6vw,78px);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:16px}
+  .thanks .p{color:var(--soft);font-size:16px;max-width:560px;line-height:1.55}
+
+  /* revelacion */
+  .colectivo{margin-bottom:64px}
+  .colectivo .block{margin-top:28px}
+  .colectivo .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
+  .colectivo .content{font-size:clamp(20px,2.6vw,30px);line-height:1.25;letter-spacing:-.005em;font-weight:400}
+  .colectivo .content.caption{font-size:16px;line-height:1.55;color:var(--soft);margin-top:16px;max-width:680px}
+  .divisor{height:1px;background:var(--hair);margin:56px 0}
+
+  /* grafo */
+  .grafo-wrap{position:relative;margin-top:16px;border:1px solid var(--hair);border-radius:12px;background:radial-gradient(120% 120% at 50% 0%,#111110 0%,#0b0b0a 70%);overflow:hidden}
+  .grafo-wrap canvas{display:block;width:100%;cursor:grab}
+  .grafo-legend{position:absolute;bottom:12px;left:14px;display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
+  .grafo-legend span{display:inline-flex;align-items:center;gap:6px}
+  .grafo-legend .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
+  .grafo-legend .dot.u{background:#fff}
+  .grafo-legend .dot.c{background:var(--accent)}
+  .grafo-legend .dot.a{background:#F26D6D}
+  .personal .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
+  .card{background:var(--field);border:1px solid var(--hair);border-radius:10px;padding:22px 24px;margin-top:16px}
+  .card h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:10px;font-weight:500}
+  .card p{font-size:16px;line-height:1.55}
+  .card.critica{border-color:var(--accent)}
+  .card.critica h3{color:var(--accent)}
+
+  /* facilitador */
+  .fac{margin-top:80px;padding-top:32px;border-top:1px solid var(--hair);opacity:.6;transition:opacity .15s}
+  .fac:hover{opacity:1}
+  .fac .lbl{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:12px}
+  .fac-row{display:flex;gap:10px;flex-wrap:wrap}
+  .fac-row button{padding:10px 16px;border:1px solid var(--hair);border-radius:6px;font-size:13px;background:var(--field)}
+  .fac-row button:hover{border-color:var(--accent);color:var(--accent)}
+
+  .hidden{display:none !important}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span id="rolpill" class="pill hidden">Usuario1</span>
+  <span class="year">2026</span>
+</div>
+<div class="spine">Cognición Aumentada · El Bosque</div>
+
+<div class="wrap" id="app"></div>
+
+<script>
+  const CFG = {
+    captura:    "https://fabianh.app.n8n.cloud/webhook/augurio-captura",
+    procesar:   "https://fabianh.app.n8n.cloud/webhook/augurio-procesar",
+    resultados: "https://fabianh.app.n8n.cloud/webhook/augurio-resultados"
+  };
+  const ROLES = Array.from({length:10}, (_,i) => ({
+    id: "usuario"+(i+1),
+    label: "Usuario"+(i+1)
+  }));
+
+  // Grafo de agrupamiento. Estructura que el sistema debe devolver:
+  //   usuarios: nodos de participantes
+  //   ideasCentrales: ideas que se repiten en el grupo (verde)
+  //   ideasAusentes: ideas que nadie mencionó y deberían estar (rojo)
+  //   conexiones: enlaces usuario -> idea central
+  // Mientras n8n no lo entregue, se usa esta muestra representativa.
+  const SAMPLE_GRAFO = {
+    usuarios: ROLES.slice(0,6).map(r => ({ id:r.id, label:r.label })),
+    ideasCentrales: [
+      { id:"c1", label:"Bienestar", desc:"El cuidado integral de la persona como principio rector." },
+      { id:"c2", label:"Enfoque biopsicosocial", desc:"Ver la salud en cuerpo, mente y entorno a la vez." },
+      { id:"c3", label:"Comunidad", desc:"El vínculo cercano entre quienes hacen la universidad." }
+    ],
+    ideasAusentes: [
+      { id:"a1", label:"Internacionalización" },
+      { id:"a2", label:"Inteligencia artificial" },
+      { id:"a3", label:"Sostenibilidad financiera" }
+    ],
+    conexiones: [
+      { from:"usuario1", to:"c1" }, { from:"usuario1", to:"c2" },
+      { from:"usuario2", to:"c1" }, { from:"usuario2", to:"c3" },
+      { from:"usuario3", to:"c2" },
+      { from:"usuario4", to:"c1" }, { from:"usuario4", to:"c3" },
+      { from:"usuario5", to:"c3" },
+      { from:"usuario6", to:"c2" }, { from:"usuario6", to:"c1" }
+    ]
+  };
+
+  let grafoRAF = null;
+  let grafoResize = null;
+  let grafoMove = null;
+  let grafoUp = null;
+
+  const params = new URLSearchParams(location.search);
+  const vista = params.get("vista") || "portada";
+  const rolFijo = params.get("rol");
+  const demo = params.get("demo") === "1";
+
+  // Datos de muestra para previsualizar la revelación sin n8n (?demo=1).
+  const SAMPLE_RESULTADOS = ROLES.slice(0,6).map(r => ({
+    rol: r.id,
+    posicion: "Voz central del grupo: converge con la mayoría en torno al bienestar y la comunidad, y se distancia en el énfasis sobre lo administrativo.",
+    comparativo: "Coincide con la muestra externa en poner a la persona en el centro, pero aporta un ángulo que la muestra no tiene: el vínculo con el egresado a largo plazo.",
+    critica: "La propuesta se sostiene si el bienestar se traduce en indicadores; su supuesto frágil es asumir que la cultura ya existe sin diseñarla. La respuesta quedó sólida, aunque conviene nombrar el mecanismo concreto.",
+    colectivo_conclusion: "El grupo lee a El Bosque desde el cuidado de la persona: el enfoque biopsicosocial no es un rasgo más, es el eje que ordena identidad, dolor y proyecto. La tensión de fondo es traducir ese cuidado en decisiones y sistemas, no dejarlo en discurso.",
+    colectivo_agrupamiento: "Tres constelaciones: una mayoría orbita el bienestar y la comunidad; un grupo menor tira hacia lo administrativo y financiero; y una voz aislada insiste en el vínculo con el egresado. Faltan por completo la internacionalización, la inteligencia artificial y la sostenibilidad financiera: nadie las nombró.",
+    colectivo_grafo: JSON.stringify(SAMPLE_GRAFO)
+  }));
+
+  const app = document.getElementById("app");
+  const rolpill = document.getElementById("rolpill");
+
+  function setRolPill(label){
+    if(!label){ rolpill.classList.add("hidden"); return; }
+    rolpill.textContent = label.toUpperCase();
+    rolpill.classList.remove("hidden");
+  }
+
+  function h(html){ const t = document.createElement("template"); t.innerHTML = html.trim(); return t.content.firstChild; }
+
+  function optRoles(){
+    return ROLES.map(r => `<option value="${r.id}">${r.label}</option>`).join("");
+  }
+
+  // ---------- PORTADA ----------
+  function renderPortada(){
+    setRolPill("");
+    app.innerHTML = `
+      <div class="portada">
+        <div class="kicker">Taller</div>
+        <h1 class="big">Cognición<br>Aumentada</h1>
+        <p class="ctx">Esta es una herramienta de conversación multiagéntica para la Universidad El Bosque. Elige a dónde quieres ir.</p>
+        <div class="op">
+          <a class="btn" href="?vista=captura">Ir a las preguntas <span class="arrow">→</span></a>
+          <a class="btn" href="?vista=revelacion">Ir a los resultados <span class="arrow">→</span></a>
+        </div>
+      </div>
+    `;
+  }
+
+  // ---------- CAPTURA ----------
+  function renderCaptura(){
+    const rolInicial = rolFijo || localStorage.getItem("augurio_rol") || "";
+    if(rolInicial) setRolPill(labelOf(rolInicial));
+
+    app.innerHTML = `
+      <a class="back solid" href="?"><span class="arrow">←</span> Volver al inicio</a>
+      <div class="kicker">Módulo I · vivir el paradigma</div>
+      <h1 class="big">Tres<br>preguntas.</h1>
+      <p class="ctx">Responde con tu criterio propio. No hay una respuesta correcta. Tus respuestas entrarán en un circuito de bots orquestados que permitirán tener una conversación aumentada con otros participantes.</p>
+
+      <div class="rolbar">
+        <label class="accent" for="rol">Selecciona tu usuario</label>
+        <select id="rol">
+          <option value="">—</option>
+          ${optRoles()}
+        </select>
+      </div>
+
+      <div class="q">
+        <div class="qtitle"><span class="num">01</span>¿Qué nos hace únicos como universidad?</div>
+        <p class="ctx">¿Qué hay en la Universidad El Bosque que ninguna otra universidad tiene y es muy valioso? ¿Qué percibe la comunidad como diferencia distintiva de la Universidad que no encuentra en otro lado?</p>
+        <textarea id="q1" placeholder="Escribe aquí tu respuesta."></textarea>
+      </div>
+
+      <div class="q">
+        <div class="qtitle"><span class="num">02</span>¿Cuál es nuestro mayor dolor en 2026?</div>
+        <p class="ctx">Si pudieras elegir un solo reto, dificultad u oportunidad de mejora que la Universidad debería atender este año de manera urgente, ¿cuál sería?</p>
+        <textarea id="q2" placeholder="Escribe aquí tu respuesta."></textarea>
+      </div>
+
+      <div class="q">
+        <div class="qtitle"><span class="num">03</span>¿Cuál es nuestro proyecto clave para 2026?</div>
+        <p class="ctx">Si pudieras escoger un proyecto para realizar con éxito al final de este año, que revirtiera en mayor valor a la Universidad, ¿cuál sería?</p>
+        <textarea id="q3" placeholder="Escribe aquí tu respuesta."></textarea>
+      </div>
+
+      <div class="send-wrap">
+        <button id="send" class="send" disabled>Enviar respuestas</button>
+      </div>
+      <div id="msg" class="msg hidden"></div>
+    `;
+
+    const rolSel = document.getElementById("rol");
+    const q1 = document.getElementById("q1");
+    const q2 = document.getElementById("q2");
+    const q3 = document.getElementById("q3");
+    const send = document.getElementById("send");
+    const msg = document.getElementById("msg");
+
+    if(rolInicial){ rolSel.value = rolInicial; }
+    rolSel.addEventListener("change", () => {
+      const v = rolSel.value;
+      localStorage.setItem("augurio_rol", v);
+      setRolPill(labelOf(v));
+      validar();
+    });
+    [q1,q2,q3].forEach(el => el.addEventListener("input", validar));
+
+    function validar(){
+      const ok = rolSel.value && q1.value.trim() && q2.value.trim() && q3.value.trim();
+      send.disabled = !ok;
+    }
+    validar();
+
+    send.addEventListener("click", async () => {
+      send.disabled = true;
+      msg.className = "msg";
+      msg.textContent = "Enviando...";
+      msg.classList.remove("hidden");
+      try{
+        const r = await fetch(CFG.captura, {
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body: JSON.stringify({
+            rol: rolSel.value,
+            q1: q1.value.trim(),
+            q2: q2.value.trim(),
+            q3: q3.value.trim()
+          })
+        });
+        if(!r.ok) throw new Error("Error "+r.status);
+        renderThanks(labelOf(rolSel.value));
+      } catch(err){
+        msg.className = "msg err";
+        msg.textContent = "No se pudo enviar. Intenta de nuevo. ("+err.message+")";
+        send.disabled = false;
+      }
+    });
+  }
+
+  function renderThanks(label){
+    setRolPill(label);
+    app.innerHTML = `
+      <div class="thanks">
+        <div class="kicker">Recibido</div>
+        <h1>Gracias.</h1>
+        <p class="p">Tu voz ya entró al ejercicio. En unos minutos verás el material colectivo y una lectura personal en tu dispositivo.</p>
+      </div>
+    `;
+  }
+
+  function labelOf(id){
+    const r = ROLES.find(x => x.id === id);
+    return r ? r.label : "";
+  }
+
+  // ---------- REVELACIÓN ----------
+  async function renderRevelacion(){
+    setRolPill("");
+    app.innerHTML = `
+      <a class="back" href="?"><span class="arrow">←</span> Volver al inicio</a>
+      <div class="kicker">Módulo I · devolución</div>
+      <h1 class="big">Sin hablar,<br>hablaron.</h1>
+      <p class="ctx">El grupo produjo un conocimiento en común que ninguno redactó solo. Abajo, la lectura colectiva. Más abajo, tu lectura personal tras seleccionar tu usuario.</p>
+
+      <div id="cargando" class="msg">Cargando resultados...</div>
+
+      <div id="colectivo" class="colectivo hidden"></div>
+      <div class="divisor hidden" id="div"></div>
+      <div id="personal" class="personal hidden"></div>
+
+      <div class="fac">
+        <div class="lbl">Facilitador</div>
+        <div class="fac-row">
+          <button id="btn-procesar">Generar material aumentado</button>
+          <button id="btn-recargar">Recargar resultados</button>
+        </div>
+        <div id="fac-msg" class="msg hidden"></div>
+      </div>
+    `;
+
+    document.getElementById("btn-procesar").addEventListener("click", procesar);
+    document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
+
+    cargarResultados();
+  }
+
+  async function cargarResultados(){
+    const cargando = document.getElementById("cargando");
+    const colDiv = document.getElementById("colectivo");
+    const divisor = document.getElementById("div");
+    const perDiv = document.getElementById("personal");
+    cargando.classList.remove("hidden");
+    cargando.textContent = "Cargando resultados...";
+    colDiv.classList.add("hidden");
+    divisor.classList.add("hidden");
+    perDiv.classList.add("hidden");
+
+    try{
+      let filas;
+      if(demo){
+        filas = SAMPLE_RESULTADOS;
+      } else {
+        const r = await fetch(CFG.resultados);
+        if(!r.ok) throw new Error("Error "+r.status);
+        const data = await r.json();
+        filas = normalizar(data);
+      }
+      if(!filas.length){
+        cargando.textContent = "Aún no hay resultados. Cuando el facilitador genere el material aumentado, aparecerá aquí.";
+        return;
+      }
+      cargando.classList.add("hidden");
+
+      const ultimo = filas[filas.length - 1];
+      colDiv.innerHTML = `
+        <div class="kicker">Lectura colectiva</div>
+        <h2 class="big">El grupo, en común.</h2>
+        <div class="block">
+          <div class="lbl">Conclusión</div>
+          <div class="content">${escapar(ultimo.colectivo_conclusion || "—")}</div>
+        </div>
+        <div class="block">
+          <div class="lbl">Agrupamiento</div>
+          <div class="grafo-wrap">
+            <canvas id="grafo-canvas"></canvas>
+            <div class="grafo-legend">
+              <span><i class="dot u"></i> Participante</span>
+              <span><i class="dot c"></i> Idea que se repite</span>
+              <span><i class="dot a"></i> Idea ausente</span>
+            </div>
+          </div>
+          <div class="content caption">${escapar(ultimo.colectivo_agrupamiento || "—")}</div>
+        </div>
+      `;
+
+      let grafo = null;
+      try { grafo = ultimo.colectivo_grafo ? JSON.parse(ultimo.colectivo_grafo) : null; } catch(e){ grafo = null; }
+      initGrafo(grafo && grafo.usuarios ? grafo : SAMPLE_GRAFO);
+      colDiv.classList.remove("hidden");
+      divisor.classList.remove("hidden");
+
+      perDiv.innerHTML = `
+        <div class="kicker">Lectura personal</div>
+        <h2 class="big">Tu bloque.</h2>
+        <p class="ctx">Selecciona tu usuario para ver, en privado en este dispositivo, tu posición en el colectivo, tu comparativo contra la muestra externa y una lectura crítica de tu propuesta.</p>
+        <div class="rolbar">
+          <label for="rol2">Selecciona tu usuario</label>
+          <select id="rol2">
+            <option value="">—</option>
+            ${optRoles()}
+          </select>
+        </div>
+        <div id="bloque-personal"></div>
+      `;
+      perDiv.classList.remove("hidden");
+
+      const rolSel = document.getElementById("rol2");
+      const bloque = document.getElementById("bloque-personal");
+      const rolGuardado = localStorage.getItem("augurio_rol");
+      if(rolGuardado){ rolSel.value = rolGuardado; mostrarPersonal(rolGuardado); }
+      rolSel.addEventListener("change", () => {
+        localStorage.setItem("augurio_rol", rolSel.value);
+        setRolPill(labelOf(rolSel.value));
+        mostrarPersonal(rolSel.value);
+      });
+
+      function mostrarPersonal(rolId){
+        if(!rolId){ bloque.innerHTML = ""; setRolPill(""); return; }
+        setRolPill(labelOf(rolId));
+        const mio = [...filas].reverse().find(f => (f.rol||"").toLowerCase() === rolId.toLowerCase());
+        if(!mio){
+          bloque.innerHTML = `<div class="msg">No hay lectura personal para este usuario.</div>`;
+          return;
+        }
+        bloque.innerHTML = `
+          <div class="card">
+            <h3>Tu posición en el colectivo</h3>
+            <p>${escapar(mio.posicion || "—")}</p>
+          </div>
+          <div class="card">
+            <h3>Comparativo con la muestra externa</h3>
+            <p>${escapar(mio.comparativo || "—")}</p>
+          </div>
+          <div class="card critica">
+            <h3>Lectura crítica de tu propuesta</h3>
+            <p>${escapar(mio.critica || "—")}</p>
+          </div>
+        `;
+      }
+    } catch(err){
+      cargando.className = "msg err";
+      cargando.textContent = "No se pudieron cargar los resultados. ("+err.message+")";
+    }
+  }
+
+  async function procesar(){
+    const facMsg = document.getElementById("fac-msg");
+    facMsg.className = "msg";
+    facMsg.textContent = "Procesando... esto toma unos segundos.";
+    facMsg.classList.remove("hidden");
+    try{
+      const r = await fetch(CFG.procesar, { method:"POST" });
+      if(!r.ok) throw new Error("Error "+r.status);
+      facMsg.className = "msg ok";
+      facMsg.textContent = "Listo. Recargando resultados.";
+      setTimeout(cargarResultados, 800);
+    } catch(err){
+      facMsg.className = "msg err";
+      facMsg.textContent = "Falló el procesamiento. ("+err.message+")";
+    }
+  }
+
+  function normalizar(data){
+    if(Array.isArray(data)) return data;
+    if(data && Array.isArray(data.data)) return data.data;
+    if(data && typeof data === "object") return [data];
+    return [];
+  }
+
+  function escapar(s){
+    return String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+  }
+
+  // ---------- GRAFO DE AGRUPAMIENTO ----------
+  function initGrafo(grafo){
+    const canvas = document.getElementById("grafo-canvas");
+    if(!canvas || !grafo) return;
+    const wrap = canvas.parentElement;
+    const ctx = canvas.getContext("2d");
+    const DPR = Math.min(window.devicePixelRatio || 1, 2);
+    const H = 460;
+    let W = wrap.clientWidth || 800;
+
+    function size(){
+      W = wrap.clientWidth || 800;
+      canvas.width = W * DPR;
+      canvas.height = H * DPR;
+      canvas.style.height = H + "px";
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    size();
+
+    const nodes = [];
+    const byId = {};
+    function add(n){ nodes.push(n); byId[n.id] = n; }
+    const cx = W / 2, cy = H / 2;
+    const spread = (dx, dy) => ({ x: cx + (Math.random()-0.5)*dx, y: cy + (Math.random()-0.5)*dy });
+
+    (grafo.usuarios || []).forEach(u => { const p = spread(180,180); add({ id:u.id, label:u.label||u.id, type:"user", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
+    (grafo.ideasCentrales || []).forEach(c => { const p = spread(120,120); add({ id:c.id, label:c.label, desc:c.desc, type:"central", x:p.x, y:p.y, vx:0, vy:0, r:10 }); });
+    (grafo.ideasAusentes || []).forEach(a => { const p = spread(260,260); add({ id:a.id, label:a.label, type:"absent", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
+    const edges = (grafo.conexiones || []).filter(e => byId[e.from] && byId[e.to]);
+
+    const REST = 96, K_SPRING = 0.02, K_REP = 3000, K_CENTER = 0.008, DAMP = 0.86;
+    let dragging = null;
+
+    function step(){
+      for(let i=0;i<nodes.length;i++){
+        const a = nodes[i];
+        for(let j=i+1;j<nodes.length;j++){
+          const b = nodes[j];
+          let dx = a.x-b.x, dy = a.y-b.y;
+          let d2 = dx*dx + dy*dy || 0.01;
+          let d = Math.sqrt(d2);
+          let rep = K_REP;
+          if(a.type === "central" && b.type === "central") rep *= 4;
+          let f = rep / d2;
+          let fx = (dx/d)*f, fy = (dy/d)*f;
+          a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+        }
+      }
+      edges.forEach(e => {
+        const a = byId[e.from], b = byId[e.to];
+        let dx = b.x-a.x, dy = b.y-a.y;
+        let d = Math.sqrt(dx*dx + dy*dy) || 0.01;
+        let f = (d - REST) * K_SPRING;
+        let fx = (dx/d)*f, fy = (dy/d)*f;
+        a.vx += fx; a.vy += fy; b.vx -= fx; b.vy -= fy;
+      });
+      nodes.forEach(n => {
+        if(n === dragging){ n.vx = 0; n.vy = 0; return; }
+        n.vx += (cx - n.x) * K_CENTER;
+        n.vy += (cy - n.y) * K_CENTER;
+        n.vx += (Math.random()-0.5) * 0.18;
+        n.vy += (Math.random()-0.5) * 0.18;
+        n.vx *= DAMP; n.vy *= DAMP;
+        n.x += n.vx; n.y += n.vy;
+        const m = 26;
+        n.x = Math.max(m, Math.min(W-m, n.x));
+        n.y = Math.max(m, Math.min(H-m, n.y));
+      });
+    }
+
+    function draw(){
+      ctx.clearRect(0, 0, W, H);
+      ctx.lineWidth = 1;
+      edges.forEach(e => {
+        const a = byId[e.from], b = byId[e.to];
+        ctx.strokeStyle = "rgba(138,138,136,0.32)";
+        ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      });
+      nodes.forEach(n => {
+        const color = n.type === "central" ? "#17F7A1" : n.type === "absent" ? "#F26D6D" : "#FFFFFF";
+        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
+        ctx.fillStyle = color;
+        ctx.fill();
+        if(n.type === "absent"){
+          ctx.beginPath(); ctx.arc(n.x, n.y, n.r+5, 0, Math.PI*2);
+          ctx.strokeStyle = "rgba(242,109,109,0.35)";
+          ctx.setLineDash([2,3]); ctx.stroke(); ctx.setLineDash([]);
+        }
+        ctx.fillStyle = n.type === "user" ? "rgba(255,255,255,0.6)" : color;
+        ctx.font = (n.type === "central" ? "600 " : "") + '11px "IBM Plex Mono", monospace';
+        ctx.textAlign = "center";
+        ctx.fillText(n.label, n.x, n.y - n.r - 7);
+        if(n.type === "central" && n.desc){
+          ctx.fillStyle = "rgba(206,206,204,0.92)";
+          ctx.font = '10px "IBM Plex Mono", monospace';
+          wrapText(n.desc, n.x, n.y + n.r + 13, 160, 12);
+        }
+      });
+    }
+
+    function wrapText(text, x, y, maxW, lh){
+      const words = String(text).split(" ");
+      let line = "", ly = y;
+      for(const w of words){
+        const test = line ? line + " " + w : w;
+        if(ctx.measureText(test).width > maxW && line){
+          ctx.fillText(line, x, ly);
+          line = w; ly += lh;
+        } else {
+          line = test;
+        }
+      }
+      if(line) ctx.fillText(line, x, ly);
+    }
+
+    function loop(){ step(); draw(); grafoRAF = requestAnimationFrame(loop); }
+    if(grafoRAF) cancelAnimationFrame(grafoRAF);
+    loop();
+
+    // --- arrastre con mouse / touch ---
+    function pos(e){
+      const rect = canvas.getBoundingClientRect();
+      const t = e.touches && e.touches[0] ? e.touches[0] : e;
+      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+    }
+    function nodeAt(x, y){
+      for(let i=nodes.length-1;i>=0;i--){
+        const n = nodes[i];
+        const dx = n.x - x, dy = n.y - y, hit = n.r + 9;
+        if(dx*dx + dy*dy <= hit*hit) return n;
+      }
+      return null;
+    }
+    function onDown(e){
+      const p = pos(e);
+      const n = nodeAt(p.x, p.y);
+      if(n){ dragging = n; canvas.style.cursor = "grabbing"; if(e.cancelable) e.preventDefault(); }
+    }
+    function onMove(e){
+      const p = pos(e);
+      if(dragging){
+        dragging.x = p.x; dragging.y = p.y; dragging.vx = 0; dragging.vy = 0;
+        if(e.cancelable) e.preventDefault();
+      } else {
+        canvas.style.cursor = nodeAt(p.x, p.y) ? "grab" : "default";
+      }
+    }
+    function onUp(){ dragging = null; canvas.style.cursor = "grab"; }
+
+    canvas.addEventListener("mousedown", onDown);
+    canvas.addEventListener("touchstart", onDown, { passive:false });
+    canvas.addEventListener("touchmove", onMove, { passive:false });
+    canvas.addEventListener("touchend", onUp);
+    if(grafoMove) window.removeEventListener("mousemove", grafoMove);
+    if(grafoUp) window.removeEventListener("mouseup", grafoUp);
+    grafoMove = onMove; grafoUp = onUp;
+    window.addEventListener("mousemove", grafoMove);
+    window.addEventListener("mouseup", grafoUp);
+
+    if(grafoResize) window.removeEventListener("resize", grafoResize);
+    grafoResize = () => size();
+    window.addEventListener("resize", grafoResize);
+  }
+
+  // router
+  if(vista === "captura") renderCaptura();
+  else if(vista === "revelacion") renderRevelacion();
+  else renderPortada();
+</script>
+
+</body>
+</html>
