@@ -88,13 +88,23 @@
 
   /* grafo */
   .grafo-wrap{position:relative;margin-top:16px;border:1px solid var(--hair);border-radius:12px;background:radial-gradient(120% 120% at 50% 0%,#111110 0%,#0b0b0a 70%);overflow:hidden}
-  .grafo-wrap canvas{display:block;width:100%;cursor:grab}
+  .grafo-wrap canvas{display:block;width:100%;cursor:default;touch-action:none}
   .grafo-legend{position:absolute;bottom:12px;left:14px;display:flex;gap:16px;flex-wrap:wrap;font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--soft)}
   .grafo-legend span{display:inline-flex;align-items:center;gap:6px}
   .grafo-legend .dot{width:8px;height:8px;border-radius:999px;display:inline-block}
   .grafo-legend .dot.u{background:#fff}
   .grafo-legend .dot.c{background:var(--accent)}
-  .grafo-legend .dot.a{background:#F26D6D}
+  .grafo-legend .dot.a{background:#FF4885}
+  .grafo-legend .hint{color:#5c5c5a}
+  .grafo-card{position:absolute;z-index:6;max-width:250px;background:#141412;border:1px solid var(--hair);border-radius:10px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.55)}
+  .grafo-card.c{border-color:var(--accent)}
+  .grafo-card.a{border-color:#FF4885}
+  .grafo-card .t{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;padding-right:18px}
+  .grafo-card.c .t{color:var(--accent)}
+  .grafo-card.a .t{color:#FF4885}
+  .grafo-card .d{font-size:13px;line-height:1.5;color:#CECECC}
+  .grafo-card .x{position:absolute;top:8px;right:10px;color:var(--soft);font-size:14px;line-height:1}
+  .grafo-card .x:hover{color:var(--ink)}
   .personal .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
   .card{background:var(--field);border:1px solid var(--hair);border-radius:10px;padding:22px 24px;margin-top:16px}
   .card h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:10px;font-weight:500}
@@ -148,9 +158,9 @@
       { id:"c3", label:"Comunidad", desc:"El vínculo cercano entre quienes hacen la universidad." }
     ],
     ideasAusentes: [
-      { id:"a1", label:"Internacionalización" },
-      { id:"a2", label:"Inteligencia artificial" },
-      { id:"a3", label:"Sostenibilidad financiera" }
+      { id:"a1", label:"Internacionalización", desc:"Alianzas, movilidad y proyección global: nadie la mencionó en sus respuestas." },
+      { id:"a2", label:"Inteligencia artificial", desc:"El tema que convoca este taller no apareció en las voces del grupo." },
+      { id:"a3", label:"Sostenibilidad financiera", desc:"La base económica que sostiene todo lo demás quedó fuera de la conversación." }
     ],
     conexiones: [
       { from:"usuario1", to:"c1" }, { from:"usuario1", to:"c2" },
@@ -164,8 +174,6 @@
 
   let grafoRAF = null;
   let grafoResize = null;
-  let grafoMove = null;
-  let grafoUp = null;
 
   const params = new URLSearchParams(location.search);
   const vista = params.get("vista") || "portada";
@@ -398,6 +406,7 @@
               <span><i class="dot u"></i> Participante</span>
               <span><i class="dot c"></i> Idea que se repite</span>
               <span><i class="dot a"></i> Idea ausente</span>
+              <span class="hint">Clic en una idea para ver su descripción</span>
             </div>
           </div>
           <div class="content caption">${escapar(ultimo.colectivo_agrupamiento || "—")}</div>
@@ -519,7 +528,7 @@
 
     (grafo.usuarios || []).forEach(u => { const p = spread(180,180); add({ id:u.id, label:u.label||u.id, type:"user", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
     (grafo.ideasCentrales || []).forEach(c => { const p = spread(120,120); add({ id:c.id, label:c.label, desc:c.desc, type:"central", x:p.x, y:p.y, vx:0, vy:0, r:10 }); });
-    (grafo.ideasAusentes || []).forEach(a => { const p = spread(260,260); add({ id:a.id, label:a.label, type:"absent", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
+    (grafo.ideasAusentes || []).forEach(a => { const p = spread(260,260); add({ id:a.id, label:a.label, desc:a.desc, type:"absent", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
     const edges = (grafo.conexiones || []).filter(e => byId[e.from] && byId[e.to]);
 
     const REST = 96, K_SPRING = 0.02, K_REP = 3000, K_CENTER = 0.008, DAMP = 0.86;
@@ -571,85 +580,89 @@
         ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
       });
       nodes.forEach(n => {
-        const color = n.type === "central" ? "#17F7A1" : n.type === "absent" ? "#F26D6D" : "#FFFFFF";
+        const color = n.type === "central" ? "#17F7A1" : n.type === "absent" ? "#FF4885" : "#FFFFFF";
         ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI*2);
         ctx.fillStyle = color;
         ctx.fill();
         if(n.type === "absent"){
           ctx.beginPath(); ctx.arc(n.x, n.y, n.r+5, 0, Math.PI*2);
-          ctx.strokeStyle = "rgba(242,109,109,0.35)";
+          ctx.strokeStyle = "rgba(255,72,133,0.35)";
           ctx.setLineDash([2,3]); ctx.stroke(); ctx.setLineDash([]);
         }
         ctx.fillStyle = n.type === "user" ? "rgba(255,255,255,0.6)" : color;
         ctx.font = (n.type === "central" ? "600 " : "") + '11px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
         ctx.fillText(n.label, n.x, n.y - n.r - 7);
-        if(n.type === "central" && n.desc){
-          ctx.fillStyle = "rgba(206,206,204,0.92)";
-          ctx.font = '10px "IBM Plex Mono", monospace';
-          wrapText(n.desc, n.x, n.y + n.r + 13, 160, 12);
-        }
       });
-    }
-
-    function wrapText(text, x, y, maxW, lh){
-      const words = String(text).split(" ");
-      let line = "", ly = y;
-      for(const w of words){
-        const test = line ? line + " " + w : w;
-        if(ctx.measureText(test).width > maxW && line){
-          ctx.fillText(line, x, ly);
-          line = w; ly += lh;
-        } else {
-          line = test;
-        }
-      }
-      if(line) ctx.fillText(line, x, ly);
     }
 
     function loop(){ step(); draw(); grafoRAF = requestAnimationFrame(loop); }
     if(grafoRAF) cancelAnimationFrame(grafoRAF);
     loop();
 
-    // --- arrastre con mouse / touch ---
+    // --- interacción: arrastre con pointer capture y tarjetas al clic ---
+    let pressPos = null, moved = false, card = null;
+
     function pos(e){
       const rect = canvas.getBoundingClientRect();
-      const t = e.touches && e.touches[0] ? e.touches[0] : e;
-      return { x: t.clientX - rect.left, y: t.clientY - rect.top };
+      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
     }
     function nodeAt(x, y){
       for(let i=nodes.length-1;i>=0;i--){
         const n = nodes[i];
-        const dx = n.x - x, dy = n.y - y, hit = n.r + 9;
+        const dx = n.x - x, dy = n.y - y, hit = Math.max(n.r + 12, 16);
         if(dx*dx + dy*dy <= hit*hit) return n;
       }
       return null;
     }
-    function onDown(e){
+    function hideCard(){ if(card){ card.remove(); card = null; } }
+    function showCard(n){
+      hideCard();
+      card = document.createElement("div");
+      card.className = "grafo-card " + (n.type === "central" ? "c" : "a");
+      card.innerHTML = `<button class="x" aria-label="Cerrar">×</button><div class="t">${escapar(n.label)}</div><div class="d">${escapar(n.desc || "Sin descripción disponible.")}</div>`;
+      wrap.appendChild(card);
+      const cw = card.offsetWidth || 250, chh = card.offsetHeight || 100;
+      let x = n.x + 18, y = n.y - chh/2;
+      if(x + cw > W - 10) x = n.x - cw - 18;
+      x = Math.max(10, x);
+      y = Math.max(10, Math.min(H - chh - 10, y));
+      card.style.left = x + "px"; card.style.top = y + "px";
+      card.querySelector(".x").addEventListener("click", hideCard);
+    }
+
+    canvas.addEventListener("pointerdown", e => {
       const p = pos(e);
       const n = nodeAt(p.x, p.y);
-      if(n){ dragging = n; canvas.style.cursor = "grabbing"; if(e.cancelable) e.preventDefault(); }
-    }
-    function onMove(e){
+      hideCard();
+      if(n){
+        dragging = n; moved = false; pressPos = p;
+        try { canvas.setPointerCapture(e.pointerId); } catch(_) {}
+        canvas.style.cursor = "grabbing";
+        e.preventDefault();
+      }
+    });
+    canvas.addEventListener("pointermove", e => {
       const p = pos(e);
       if(dragging){
-        dragging.x = p.x; dragging.y = p.y; dragging.vx = 0; dragging.vy = 0;
-        if(e.cancelable) e.preventDefault();
+        if(Math.hypot(p.x - pressPos.x, p.y - pressPos.y) > 5) moved = true;
+        const m = 26;
+        dragging.x = Math.max(m, Math.min(W - m, p.x));
+        dragging.y = Math.max(m, Math.min(H - m, p.y));
+        dragging.vx = 0; dragging.vy = 0;
+        e.preventDefault();
       } else {
-        canvas.style.cursor = nodeAt(p.x, p.y) ? "grab" : "default";
+        canvas.style.cursor = nodeAt(p.x, p.y) ? "pointer" : "default";
       }
-    }
-    function onUp(){ dragging = null; canvas.style.cursor = "grab"; }
-
-    canvas.addEventListener("mousedown", onDown);
-    canvas.addEventListener("touchstart", onDown, { passive:false });
-    canvas.addEventListener("touchmove", onMove, { passive:false });
-    canvas.addEventListener("touchend", onUp);
-    if(grafoMove) window.removeEventListener("mousemove", grafoMove);
-    if(grafoUp) window.removeEventListener("mouseup", grafoUp);
-    grafoMove = onMove; grafoUp = onUp;
-    window.addEventListener("mousemove", grafoMove);
-    window.addEventListener("mouseup", grafoUp);
+    });
+    canvas.addEventListener("pointerup", () => {
+      if(dragging && !moved && (dragging.type === "central" || dragging.type === "absent")){
+        showCard(dragging);
+      }
+      dragging = null;
+      canvas.style.cursor = "default";
+    });
+    canvas.addEventListener("pointercancel", () => { dragging = null; canvas.style.cursor = "default"; });
 
     if(grafoResize) window.removeEventListener("resize", grafoResize);
     grafoResize = () => size();
