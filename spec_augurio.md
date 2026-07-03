@@ -234,7 +234,8 @@ Existe un archivo `augurio.html` autocontenido y funcional. Un solo HTML sin dep
 
 - Sin parámetro, portada con dos botones.
 - `?vista=captura`, formulario de las tres preguntas con selector de usuario.
-- `?vista=revelacion`, bloque colectivo arriba y bloque personal tras selector, más un panel de facilitador con botones para procesar y recargar.
+- `?vista=revelacion`, bloque colectivo arriba y bloque personal tras selector.
+- `?vista=revelacion&fac=1`, lo mismo más el panel de facilitador (procesar, recargar, reiniciar). Sin `fac=1` el panel no se renderiza; es la URL que usa solo el facilitador.
 
 Identificadores de usuario: `usuario1` a `usuario10`. Etiquetas visibles: `Usuario1` a `Usuario10`. El rol elegido se persiste en `localStorage` con la clave `augurio_rol`.
 
@@ -297,7 +298,7 @@ Hay una promesa de un modo de respaldo por si el flujo de procesamiento falla en
 
 ### 4.5 Panel de facilitador
 
-En la vista de revelación hay un panel al final con tres botones (`Generar material aumentado`, `Recargar resultados` y `Reiniciar ejercicio`), atenuado por defecto y que se resalta al pasar el mouse. El de reinicio pide confirmación con un diálogo del navegador y se colorea rosa al pasar el mouse, para distinguir lo destructivo. Se puede ocultar tras una tecla o un parámetro para que no aparezca en el proyector, si se decide. Está a la vista para pragmatismo del día.
+En la vista de revelación hay un panel al final con tres botones (`Generar material aumentado`, `Recargar resultados` y `Reiniciar ejercicio`), atenuado por defecto y que se resalta al pasar el mouse. **El panel solo se renderiza con el parámetro `&fac=1` en la URL**; los participantes, que abren la vista sin ese parámetro, no lo ven ni pueden dispararlo. El botón de reinicio exige además escribir la palabra `BORRAR` en un diálogo para confirmar, y se colorea rosa al pasar el mouse, para distinguir lo destructivo. Se puede ocultar tras una tecla o un parámetro para que no aparezca en el proyector, si se decide. Está a la vista para pragmatismo del día.
 
 ### 4.6 Estilo de la portada y detalles de motion
 

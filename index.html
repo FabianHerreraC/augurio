@@ -181,6 +181,7 @@
   const vista = params.get("vista") || "portada";
   const rolFijo = params.get("rol");
   const demo = params.get("demo") === "1";
+  const fac = params.get("fac") === "1";
 
   // Datos de muestra para previsualizar la revelación sin n8n (?demo=1).
   const SAMPLE_RESULTADOS = ROLES.slice(0,6).map(r => ({
@@ -349,6 +350,7 @@
       <div class="divisor hidden" id="div"></div>
       <div id="personal" class="personal hidden"></div>
 
+      ${fac ? `
       <div class="fac">
         <div class="lbl">Facilitador</div>
         <div class="fac-row">
@@ -357,12 +359,14 @@
           <button id="btn-reset" class="danger">Reiniciar ejercicio</button>
         </div>
         <div id="fac-msg" class="msg hidden"></div>
-      </div>
+      </div>` : ``}
     `;
 
-    document.getElementById("btn-procesar").addEventListener("click", procesar);
-    document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
-    document.getElementById("btn-reset").addEventListener("click", resetear);
+    if(fac){
+      document.getElementById("btn-procesar").addEventListener("click", procesar);
+      document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
+      document.getElementById("btn-reset").addEventListener("click", resetear);
+    }
 
     cargarResultados();
   }
@@ -504,8 +508,14 @@
 
   async function resetear(){
     const facMsg = document.getElementById("fac-msg");
-    const seguro = confirm("Esto borra TODAS las respuestas y los resultados del ejercicio. La muestra externa no se toca. ¿Reiniciar de cero?");
-    if(!seguro) return;
+    const escrito = prompt("Esto borra TODAS las respuestas y los resultados del ejercicio. La muestra externa no se toca.\n\nPara confirmar, escribe: BORRAR");
+    if(escrito === null) return;
+    if(escrito.trim().toUpperCase() !== "BORRAR"){
+      facMsg.className = "msg err";
+      facMsg.textContent = "Reinicio cancelado: la confirmación no coincide.";
+      facMsg.classList.remove("hidden");
+      return;
+    }
     facMsg.className = "msg";
     facMsg.textContent = "Reiniciando...";
     facMsg.classList.remove("hidden");
