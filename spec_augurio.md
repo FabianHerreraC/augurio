@@ -58,7 +58,7 @@ Tres piezas conectadas por webhooks:
 
 **Reinicio.** El facilitador dispara desde el panel de la vista de revelación un POST al webhook `augurio-reset`, tras un diálogo de confirmación. Ese flujo borra los datos de `respuestas` y `resultados` desde la fila 2 (los encabezados se conservan) y no toca `muestra`. Sirve para ensayar varias veces y para empezar el ejercicio de cero.
 
-**Lectura.** La misma vista de revelación consulta por GET el webhook `augurio-resultados`, que devuelve el contenido completo de la pestaña `resultados`. La web muestra el bloque colectivo arriba, siempre visible, y despliega el bloque personal solo cuando el participante selecciona su usuario en un selector.
+**Lectura.** La misma vista de revelación consulta por GET el webhook `augurio-resultados`, que devuelve el contenido completo de la pestaña `resultados`. Los resultados se cargan una sola vez al abrir la página: no hay sondeo automático ni push. **Decisión consciente (2026-07-02)**: tras generar el material, el facilitador pide en voz alta a los participantes que recarguen la página. Se evaluó un auto-sondeo y se descartó por innecesario. La web muestra el bloque colectivo arriba, siempre visible, y despliega el bloque personal solo cuando el participante selecciona su usuario en un selector.
 
 ### 2.3 Modelo de privacidad
 
