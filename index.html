@@ -96,7 +96,7 @@
   .grafo-legend .dot.c{background:var(--accent)}
   .grafo-legend .dot.a{background:#FF4885}
   .grafo-legend .hint{color:#5c5c5a}
-  .grafo-card{position:absolute;z-index:6;max-width:250px;background:#141412;border:1px solid var(--hair);border-radius:10px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.55)}
+  .grafo-card{position:absolute;z-index:6;width:min(340px,80vw);background:#141412;border:1px solid var(--hair);border-radius:10px;padding:14px 16px;box-shadow:0 8px 30px rgba(0,0,0,.55)}
   .grafo-card.c{border-color:var(--accent)}
   .grafo-card.a{border-color:#FF4885}
   .grafo-card .t{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;padding-right:18px}
@@ -153,14 +153,14 @@
   const SAMPLE_GRAFO = {
     usuarios: ROLES.slice(0,6).map(r => ({ id:r.id, label:r.label })),
     ideasCentrales: [
-      { id:"c1", label:"Bienestar", desc:"El cuidado integral de la persona como principio rector." },
-      { id:"c2", label:"Enfoque biopsicosocial", desc:"Ver la salud en cuerpo, mente y entorno a la vez." },
-      { id:"c3", label:"Comunidad", desc:"El vínculo cercano entre quienes hacen la universidad." }
+      { id:"c1", label:"Bienestar", desc:"El cuidado integral de la persona aparece como principio rector en la mayoría de las voces del grupo. No se nombra como un servicio más, sino como el rasgo que ordena la identidad de la Universidad: lo que se hace, se hace primero por el bienestar de quien aprende y de quien enseña. Varias respuestas lo señalan además como la razón por la que la comunidad permanece y regresa." },
+      { id:"c2", label:"Enfoque biopsicosocial", desc:"Ver la salud y la formación en cuerpo, mente y entorno al mismo tiempo es la seña distintiva que el grupo reconoce como propia. Las respuestas coinciden en que este enfoque atraviesa los programas y la cultura institucional, y en que ninguna otra universidad del país lo encarna con la misma profundidad. La tensión aparece al preguntarse si sigue siendo un diferencial o ya un punto de partida que otros alcanzaron." },
+      { id:"c3", label:"Comunidad", desc:"El vínculo cercano entre estudiantes, profesores y administrativos se repite como el tejido que sostiene todo lo demás. El grupo lo describe como una escala humana que las universidades más grandes perdieron: aquí las personas se conocen por el nombre. Algunas voces advierten que ese capital es frágil y que el crecimiento institucional podría diluirlo si no se protege de forma deliberada." }
     ],
     ideasAusentes: [
-      { id:"a1", label:"Internacionalización", desc:"Alianzas, movilidad y proyección global: nadie la mencionó en sus respuestas." },
-      { id:"a2", label:"Inteligencia artificial", desc:"El tema que convoca este taller no apareció en las voces del grupo." },
-      { id:"a3", label:"Sostenibilidad financiera", desc:"La base económica que sostiene todo lo demás quedó fuera de la conversación." }
+      { id:"a1", label:"Internacionalización", desc:"Ninguna respuesta del grupo mencionó alianzas globales, movilidad académica ni proyección internacional. Para una universidad que compite por estudiantes y por investigación en un mercado abierto, ese silencio es notable: la conversación quedó completamente puertas adentro, mirando lo propio sin preguntarse cómo se conecta con el mundo." },
+      { id:"a2", label:"Inteligencia artificial", desc:"El tema que convoca este taller no apareció en las voces del grupo. Nadie la nombró ni como oportunidad ni como riesgo, ni siquiera al hablar de los proyectos de 2026. La ausencia sugiere que la IA todavía se percibe como un asunto técnico y lejano, no como una fuerza que ya está reorganizando la docencia, la investigación y la gestión." },
+      { id:"a3", label:"Sostenibilidad financiera", desc:"La base económica que sostiene todo lo demás quedó fuera de la conversación. El grupo habló de identidad, de dolores y de proyectos, pero ninguna voz se preguntó con qué recursos se financia ese futuro ni cómo se diversifican los ingresos. Es la condición de posibilidad de todas las demás ideas, y nadie la puso sobre la mesa." }
     ],
     conexiones: [
       { from:"usuario1", to:"c1" }, { from:"usuario1", to:"c2" },
