@@ -232,10 +232,11 @@ Los cuatro flujos deben quedar **activos** en n8n antes del taller. Sin activaci
 
 Existe un archivo `augurio.html` autocontenido y funcional. Un solo HTML sin dependencias externas, sin build, con CSS y JavaScript inline. Se hospeda en cualquier estático (GitHub Pages, Netlify, Vercel). Tres vistas controladas por parámetro de URL:
 
-- Sin parámetro, portada con dos botones.
+- Sin parámetro (raíz): página de participantes. Header con el logo de Augurio (caja blanca), titular `HOLA!!!`, manifiesto y logo de la Universidad El Bosque; botón verde `Ir a las preguntas`; pill `Eres el: USUARIO NN` si hay rol guardado; lectura colectiva en tarjetas numeradas de borde blanco (1. Conclusión colectiva, 2. Grafo relacional con el canvas y el texto de agrupamiento como caption) y lectura individual tras el selector (3. Posición, 4. Comparativo, 5. Lectura crítica, esta con borde verde). Pie: `Fabian Herrera 2026`. Es el enlace que se reparte a los participantes.
 - `?vista=captura`, formulario de las tres preguntas con selector de usuario.
-- `?vista=revelacion`, bloque colectivo arriba y bloque personal tras selector.
-- `?vista=revelacion&fac=1`, lo mismo más el panel de facilitador (procesar, recargar, reiniciar). Sin `fac=1` el panel no se renderiza; es la URL que usa solo el facilitador.
+- `?vista=revelacion`, alias de la raíz (compatibilidad con enlaces ya repartidos).
+- `&fac=1` (en la raíz o en el alias), agrega el panel de facilitador (procesar, recargar, reiniciar). Sin `fac=1` el panel no se renderiza; es la URL que usa solo el facilitador.
+- Los logos viven en `assets/augurio-logo.png` y `assets/bosque-logo.png` (blancos sobre transparente; el de Augurio se invierte con CSS dentro de la caja blanca).
 
 Identificadores de usuario: `usuario1` a `usuario10`. Etiquetas visibles: `Usuario1` a `Usuario10`. El rol elegido se persiste en `localStorage` con la clave `augurio_rol`.
 

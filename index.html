@@ -32,7 +32,14 @@
 
   /* container */
   .wrap{max-width:1080px;margin:0 auto;padding:80px 60px 60px 60px}
-  @media (max-width:720px){ .wrap{padding:80px 8px 40px 40px} body{padding:16px} }
+  @media (max-width:720px){
+    .wrap{padding:80px 8px 40px 40px} body{padding:16px}
+    .home-head{gap:18px}
+    .hola{font-size:clamp(52px,15vw,90px)}
+    .manifiesto{flex-basis:100%;min-width:0}
+    .bloque-body{padding:20px 16px}
+    .logo-box img{height:60px}
+  }
 
   /* back */
   .back{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);text-decoration:none;margin-bottom:36px;transition:color .15s}
@@ -48,9 +55,43 @@
   .num{font-family:var(--mono);font-size:11px;color:var(--soft);letter-spacing:.06em;vertical-align:super;margin-right:6px}
   .ctx{color:var(--soft);font-size:15px;line-height:1.5;margin:14px 0 18px;max-width:640px}
 
-  /* portada */
-  .portada{min-height:70vh;display:flex;flex-direction:column;justify-content:center}
-  .portada .op{display:flex;flex-direction:column;gap:14px;margin-top:36px;max-width:520px}
+  /* home */
+  .home-head{display:flex;gap:30px;align-items:flex-start;flex-wrap:wrap}
+  .logo-box{background:#fff;border-radius:12px;padding:14px 16px;flex:0 0 auto}
+  .logo-box img{display:block;height:76px;filter:invert(1)}
+  .hola{font-size:clamp(64px,10vw,140px);line-height:.88;font-weight:500;letter-spacing:-.035em;flex:1 1 auto}
+  .manifiesto{flex:0 1 380px;font-size:13px;line-height:1.55;text-align:justify;min-width:260px}
+  .head-bosque{display:flex;justify-content:flex-end;margin-top:22px}
+  .head-bosque img{height:34px;opacity:.92}
+  .head-line{height:1px;background:#3a3a38;margin:28px 0 0}
+  .cta-wrap{display:flex;justify-content:center;margin:56px 0 64px}
+  .cta{background:var(--accent);color:#00120a;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.1em;text-transform:uppercase;padding:13px 30px;border-radius:8px;text-decoration:none}
+  .cta:hover{filter:brightness(1.06)}
+  .eres{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin-bottom:34px}
+  .eres-lbl{font-size:12px;color:var(--soft)}
+  .pill-user{background:#fff;color:#0A0A0A;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.06em;padding:8px 20px;border-radius:8px;text-transform:uppercase}
+  .sec-title{font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+  .sec-intro{color:var(--soft);font-size:13px;line-height:1.55;max-width:380px;margin-bottom:28px}
+  .bloque{border:1.5px solid var(--ink);border-radius:18px;margin-bottom:36px;overflow:hidden;background:rgba(255,255,255,0.015)}
+  .bloque-head{display:flex;align-items:center;gap:14px;padding:11px 16px;border-bottom:1.5px solid var(--ink)}
+  .bloque .bnum{border:1px solid var(--ink);border-radius:999px;padding:3px 13px;font-family:var(--mono);font-size:10px;flex:0 0 auto}
+  .bloque .btitle{flex:1;text-align:center;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--soft)}
+  .bloque .btitle b{color:var(--ink);font-weight:700}
+  .bloque-body{padding:26px 30px}
+  .bloque-body .grande{font-size:clamp(17px,2vw,24px);line-height:1.42;text-align:justify}
+  .bloque-body .caption{margin-top:18px;font-size:13px;line-height:1.6;color:#CECECC;text-align:justify}
+  .bloque-body .media{font-size:15px;line-height:1.6;text-align:justify;color:#E8E8E6}
+  .bloque.critica{border-color:var(--accent)}
+  .bloque.critica .bloque-head{border-color:var(--accent)}
+  .bloque.critica .bnum{border-color:var(--accent);color:var(--accent)}
+  .bloque.critica .btitle b{color:var(--accent)}
+  .bloque .grafo-wrap{border:none;border-radius:0;margin-top:0}
+  .selbar{display:flex;flex-direction:column;gap:8px;align-items:flex-start;margin:6px 0 32px}
+  .sel-lbl{font-size:12px;color:var(--soft)}
+  select.sel-pill{width:auto;max-width:280px;background:var(--accent);color:#00120a;border:none;border-radius:8px;font-family:var(--mono);font-weight:700;font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:10px 20px}
+  .pie{margin-top:80px;padding:20px 0 8px;text-align:center;font-family:var(--mono);font-size:10px;color:var(--soft);letter-spacing:.08em}
+
+  .op{display:flex;flex-direction:column;gap:14px;margin-top:36px;max-width:520px}
   .btn{display:inline-flex;align-items:center;justify-content:space-between;padding:18px 22px;border:1px solid var(--hair);border-radius:8px;font-size:16px;transition:border-color .15s,background .15s,color .15s;text-decoration:none;color:var(--ink);background:var(--field)}
   .btn:hover{border-color:var(--accent)}
   .btn .arrow{color:var(--accent);font-family:var(--mono)}
@@ -78,14 +119,6 @@
   .thanks h1{font-size:clamp(40px,6vw,78px);line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:16px}
   .thanks .p{color:var(--soft);font-size:16px;max-width:560px;line-height:1.55}
 
-  /* revelacion */
-  .colectivo{margin-bottom:64px}
-  .colectivo .block{margin-top:28px}
-  .colectivo .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
-  .colectivo .content{font-size:clamp(20px,2.6vw,30px);line-height:1.25;letter-spacing:-.005em;font-weight:400}
-  .colectivo .content.caption{font-size:16px;line-height:1.55;color:var(--soft);margin-top:16px;max-width:680px}
-  .divisor{height:1px;background:var(--hair);margin:56px 0}
-
   /* grafo */
   .grafo-wrap{position:relative;margin-top:16px;border:1px solid var(--hair);border-radius:12px;background:radial-gradient(120% 120% at 50% 0%,#111110 0%,#0b0b0a 70%);overflow:hidden}
   .grafo-wrap canvas{display:block;width:100%;cursor:default;touch-action:none}
@@ -105,13 +138,6 @@
   .grafo-card .d{font-size:13px;line-height:1.5;color:#CECECC}
   .grafo-card .x{position:absolute;top:8px;right:10px;color:var(--soft);font-size:14px;line-height:1}
   .grafo-card .x:hover{color:var(--ink)}
-  .personal .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-bottom:10px}
-  .card{background:var(--field);border:1px solid var(--hair);border-radius:10px;padding:22px 24px;margin-top:16px}
-  .card h3{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft);margin-bottom:10px;font-weight:500}
-  .card p{font-size:16px;line-height:1.55}
-  .card.critica{border-color:var(--accent)}
-  .card.critica h3{color:var(--accent)}
-
   /* facilitador */
   .fac{margin-top:80px;padding-top:32px;border-top:1px solid var(--hair);opacity:.6;transition:opacity .15s}
   .fac:hover{opacity:1}
@@ -143,7 +169,7 @@
   };
   const ROLES = Array.from({length:10}, (_,i) => ({
     id: "usuario"+(i+1),
-    label: "Usuario"+(i+1)
+    label: "Usuario " + String(i+1).padStart(2,"0")
   }));
 
   // Grafo de agrupamiento. Estructura que el sistema debe devolver:
@@ -209,20 +235,64 @@
     return ROLES.map(r => `<option value="${r.id}">${r.label}</option>`).join("");
   }
 
-  // ---------- PORTADA ----------
-  function renderPortada(){
-    setRolPill("");
+  // ---------- HOME (inicio + resultados) ----------
+  function renderHome(){
+    document.querySelector(".top").classList.add("hidden");
+    document.querySelector(".spine").classList.add("hidden");
     app.innerHTML = `
-      <div class="portada">
-        <div class="kicker">Taller</div>
-        <h1 class="big">Cognición<br>Aumentada</h1>
-        <p class="ctx">Esta es una herramienta de conversación multiagéntica para la Universidad El Bosque. Elige a dónde quieres ir.</p>
-        <div class="op">
-          <a class="btn" href="?vista=captura">Ir a las preguntas <span class="arrow">→</span></a>
-          <a class="btn" href="?vista=revelacion">Ir a los resultados <span class="arrow">→</span></a>
-        </div>
+      <header class="home-head">
+        <div class="logo-box"><img src="assets/augurio-logo.png" alt="Augurio. Pensar todos, todo."></div>
+        <h1 class="hola">HOLA!!!</h1>
+        <p class="manifiesto">AUGURIO es un mecanismo de cognición aumentada en el que se recolectan datos de manera masiva y asincrónica. Esas voces se orquestan entre sí y con fuentes externas, para construir un conocimiento nuevo que ninguno formuló solo.</p>
+      </header>
+      <div class="head-bosque"><img src="assets/bosque-logo.png" alt="Universidad El Bosque"></div>
+      <div class="head-line"></div>
+
+      <div class="cta-wrap"><a class="cta" href="?vista=captura">Ir a las preguntas</a></div>
+
+      <div id="eres" class="eres hidden">
+        <span class="eres-lbl">Eres el:</span>
+        <span class="pill-user" id="eres-pill"></span>
       </div>
+
+      <div class="sec-title">Lectura colectiva</div>
+      <p class="sec-intro">El grupo produjo un conocimiento en común que ninguno redactó solo. Abajo, la lectura colectiva. Más abajo, tu lectura personal tras seleccionar tu usuario.</p>
+
+      <div id="cargando" class="msg">Cargando resultados...</div>
+      <div id="colectivo" class="hidden"></div>
+      <div id="personal" class="hidden"></div>
+
+      ${fac ? `
+      <div class="fac">
+        <div class="lbl">Facilitador</div>
+        <div class="fac-row">
+          <button id="btn-procesar">Generar material aumentado</button>
+          <button id="btn-recargar">Recargar resultados</button>
+          <button id="btn-reset" class="danger">Reiniciar ejercicio</button>
+        </div>
+        <div id="fac-msg" class="msg hidden"></div>
+      </div>` : ``}
+
+      <footer class="pie">Fabian Herrera 2026</footer>
     `;
+
+    if(fac){
+      document.getElementById("btn-procesar").addEventListener("click", procesar);
+      document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
+      document.getElementById("btn-reset").addEventListener("click", resetear);
+    }
+
+    setEres(localStorage.getItem("augurio_rol") || "");
+    cargarResultados();
+  }
+
+  function setEres(rolId){
+    const eres = document.getElementById("eres");
+    const pill = document.getElementById("eres-pill");
+    if(!eres) return;
+    const label = labelOf(rolId);
+    if(label){ pill.textContent = label; eres.classList.remove("hidden"); }
+    else { eres.classList.add("hidden"); }
   }
 
   // ---------- CAPTURA ----------
@@ -324,7 +394,7 @@
         <h1>Gracias.</h1>
         <p class="p">Tu voz ya entró al ejercicio. En unos minutos verás el material colectivo y una lectura personal en tu dispositivo.</p>
         <div class="op">
-          <a class="btn primary" href="?vista=revelacion">Ir a los resultados <span class="arrow">→</span></a>
+          <a class="btn primary" href="?">Ir a los resultados <span class="arrow">→</span></a>
         </div>
       </div>
     `;
@@ -335,51 +405,13 @@
     return r ? r.label : "";
   }
 
-  // ---------- REVELACIÓN ----------
-  async function renderRevelacion(){
-    setRolPill("");
-    app.innerHTML = `
-      <a class="back" href="?"><span class="arrow">←</span> Volver al inicio</a>
-      <div class="kicker">Módulo I · devolución</div>
-      <h1 class="big">Sin hablar,<br>hablaron.</h1>
-      <p class="ctx">El grupo produjo un conocimiento en común que ninguno redactó solo. Abajo, la lectura colectiva. Más abajo, tu lectura personal tras seleccionar tu usuario.</p>
-
-      <div id="cargando" class="msg">Cargando resultados...</div>
-
-      <div id="colectivo" class="colectivo hidden"></div>
-      <div class="divisor hidden" id="div"></div>
-      <div id="personal" class="personal hidden"></div>
-
-      ${fac ? `
-      <div class="fac">
-        <div class="lbl">Facilitador</div>
-        <div class="fac-row">
-          <button id="btn-procesar">Generar material aumentado</button>
-          <button id="btn-recargar">Recargar resultados</button>
-          <button id="btn-reset" class="danger">Reiniciar ejercicio</button>
-        </div>
-        <div id="fac-msg" class="msg hidden"></div>
-      </div>` : ``}
-    `;
-
-    if(fac){
-      document.getElementById("btn-procesar").addEventListener("click", procesar);
-      document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
-      document.getElementById("btn-reset").addEventListener("click", resetear);
-    }
-
-    cargarResultados();
-  }
-
   async function cargarResultados(){
     const cargando = document.getElementById("cargando");
     const colDiv = document.getElementById("colectivo");
-    const divisor = document.getElementById("div");
     const perDiv = document.getElementById("personal");
     cargando.classList.remove("hidden");
     cargando.textContent = "Cargando resultados...";
     colDiv.classList.add("hidden");
-    divisor.classList.add("hidden");
     perDiv.classList.add("hidden");
 
     try{
@@ -393,7 +425,7 @@
         filas = normalizar(data);
       }
       if(!filas.length){
-        cargando.textContent = "Aún no hay resultados. Cuando el facilitador genere el material aumentado, aparecerá aquí.";
+        cargando.textContent = "Aún no hay material aumentado. Responde primero las tres preguntas; cuando el facilitador genere el material, aparecerá aquí.";
         return;
       }
       cargando.classList.add("hidden");
@@ -409,39 +441,45 @@
       const grafoData = grafoValido ? grafo : (demo ? SAMPLE_GRAFO : null);
 
       colDiv.innerHTML = `
-        <div class="kicker">Lectura colectiva</div>
-        <h2 class="big">El grupo, en común.</h2>
-        <div class="block">
-          <div class="lbl">Conclusión</div>
-          <div class="content">${escapar(ultimo.colectivo_conclusion || "—")}</div>
+        <div class="bloque">
+          <div class="bloque-head">
+            <span class="bnum">1.</span>
+            <div class="btitle"><b>Conclusión colectiva:</b> esto es lo que, en su conjunto, el grupo revela como patrón común</div>
+          </div>
+          <div class="bloque-body"><p class="grande">${escapar(ultimo.colectivo_conclusion || "—")}</p></div>
         </div>
-        <div class="block">
-          <div class="lbl">Agrupamiento</div>
-          ${grafoData ? `
-          <div class="grafo-wrap">
-            <canvas id="grafo-canvas"></canvas>
-            <div class="grafo-legend">
-              <span><i class="dot u"></i> Participante</span>
-              <span><i class="dot c"></i> Idea que se repite</span>
-              <span><i class="dot a"></i> Idea ausente</span>
-              <span class="hint">Clic en una idea para ver su descripción</span>
-            </div>
-          </div>` : ``}
-          <div class="content ${grafoData ? "caption" : ""}">${escapar(ultimo.colectivo_agrupamiento || "—")}</div>
+        <div class="bloque">
+          <div class="bloque-head">
+            <span class="bnum">2.</span>
+            <div class="btitle">${grafoData
+              ? `<b>Grafo relacional:</b> estas son las relaciones entre conceptos y personas en la conversación`
+              : `<b>Agrupamiento:</b> así se agrupan las voces del grupo`}</div>
+          </div>
+          <div class="bloque-body">
+            ${grafoData ? `
+            <div class="grafo-wrap">
+              <canvas id="grafo-canvas"></canvas>
+              <div class="grafo-legend">
+                <span><i class="dot u"></i> Participante</span>
+                <span><i class="dot c"></i> Idea que se repite</span>
+                <span><i class="dot a"></i> Idea ausente</span>
+                <span class="hint">Clic en una idea para ver su descripción</span>
+              </div>
+            </div>` : ``}
+            <p class="caption">${escapar(ultimo.colectivo_agrupamiento || "—")}</p>
+          </div>
         </div>
       `;
 
       colDiv.classList.remove("hidden");
-      divisor.classList.remove("hidden");
       if(grafoData) initGrafo(grafoData);
 
       perDiv.innerHTML = `
-        <div class="kicker">Lectura personal</div>
-        <h2 class="big">Tu bloque.</h2>
-        <p class="ctx">Selecciona tu usuario para ver, en privado en este dispositivo, tu posición en el colectivo, tu comparativo contra la muestra externa y una lectura crítica de tu propuesta.</p>
-        <div class="rolbar">
-          <label for="rol2">Selecciona tu usuario</label>
-          <select id="rol2">
+        <div class="sec-title">Lectura individual</div>
+        <p class="sec-intro">Selecciona tu usuario para ver, en este dispositivo, tu posición en el colectivo, tu comparativo contra la muestra externa y una lectura crítica de tu propuesta.</p>
+        <div class="selbar">
+          <label class="sel-lbl" for="rol2">Selecciona tu usuario:</label>
+          <select id="rol2" class="sel-pill">
             <option value="">—</option>
             ${optRoles()}
           </select>
@@ -456,30 +494,38 @@
       if(rolGuardado){ rolSel.value = rolGuardado; mostrarPersonal(rolGuardado); }
       rolSel.addEventListener("change", () => {
         localStorage.setItem("augurio_rol", rolSel.value);
-        setRolPill(labelOf(rolSel.value));
+        setEres(rolSel.value);
         mostrarPersonal(rolSel.value);
       });
 
       function mostrarPersonal(rolId){
-        if(!rolId){ bloque.innerHTML = ""; setRolPill(""); return; }
-        setRolPill(labelOf(rolId));
+        if(!rolId){ bloque.innerHTML = ""; return; }
         const mio = [...filas].reverse().find(f => (f.rol||"").toLowerCase() === rolId.toLowerCase());
         if(!mio){
           bloque.innerHTML = `<div class="msg">No hay lectura personal para este usuario.</div>`;
           return;
         }
         bloque.innerHTML = `
-          <div class="card">
-            <h3>Tu posición en el colectivo</h3>
-            <p>${escapar(mio.posicion || "—")}</p>
+          <div class="bloque">
+            <div class="bloque-head">
+              <span class="bnum">3.</span>
+              <div class="btitle"><b>Tu posición en el colectivo</b></div>
+            </div>
+            <div class="bloque-body"><p class="media">${escapar(mio.posicion || "—")}</p></div>
           </div>
-          <div class="card">
-            <h3>Comparativo con la muestra externa</h3>
-            <p>${escapar(mio.comparativo || "—")}</p>
+          <div class="bloque">
+            <div class="bloque-head">
+              <span class="bnum">4.</span>
+              <div class="btitle"><b>Comparativo con la muestra externa</b></div>
+            </div>
+            <div class="bloque-body"><p class="media">${escapar(mio.comparativo || "—")}</p></div>
           </div>
-          <div class="card critica">
-            <h3>Lectura crítica de tu propuesta</h3>
-            <p>${escapar(mio.critica || "—")}</p>
+          <div class="bloque critica">
+            <div class="bloque-head">
+              <span class="bnum">5.</span>
+              <div class="btitle"><b>Lectura crítica de tu posición</b></div>
+            </div>
+            <div class="bloque-body"><p class="media">${escapar(mio.critica || "—")}</p></div>
           </div>
         `;
       }
@@ -717,10 +763,10 @@
     window.addEventListener("resize", grafoResize);
   }
 
-  // router
+  // router: la raíz es la página de participantes; ?vista=revelacion se
+  // conserva como alias para los enlaces ya repartidos.
   if(vista === "captura") renderCaptura();
-  else if(vista === "revelacion") renderRevelacion();
-  else renderPortada();
+  else renderHome();
 </script>
 
 </body>

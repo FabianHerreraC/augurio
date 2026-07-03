@@ -5,10 +5,10 @@ Web estática autocontenida (un solo `index.html`, sin build) conectada a tres f
 
 ## Vistas
 
-- `index.html` — portada con dos accesos.
+- `index.html` — página de participantes: presentación de Augurio, acceso a las preguntas y resultados (lectura colectiva con grafo y lectura individual).
 - `index.html?vista=captura` — formulario de las tres preguntas.
-- `index.html?vista=revelacion` — lectura colectiva (con grafo de agrupamiento) y lectura personal.
-- `index.html?vista=revelacion&demo=1` — modo demo con datos de muestra, sin depender de n8n.
+- `index.html?fac=1` — lo mismo que la raíz más el panel de facilitador.
+- `index.html?demo=1` — modo demo con datos de muestra, sin depender de n8n.
 
 ## Desarrollo local
 
