@@ -415,9 +415,9 @@
 
       let grafo = null;
       try { grafo = ultimo.colectivo_grafo ? JSON.parse(ultimo.colectivo_grafo) : null; } catch(e){ grafo = null; }
-      initGrafo(grafo && grafo.usuarios ? grafo : SAMPLE_GRAFO);
       colDiv.classList.remove("hidden");
       divisor.classList.remove("hidden");
+      initGrafo(grafo && grafo.usuarios ? grafo : SAMPLE_GRAFO);
 
       perDiv.innerHTML = `
         <div class="kicker">Lectura personal</div>
@@ -511,19 +511,20 @@
     const H = 460;
     let W = wrap.clientWidth || 800;
 
+    let cx, cy;
     function size(){
       W = wrap.clientWidth || 800;
       canvas.width = W * DPR;
       canvas.height = H * DPR;
       canvas.style.height = H + "px";
       ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      cx = W / 2; cy = H / 2;
     }
     size();
 
     const nodes = [];
     const byId = {};
     function add(n){ nodes.push(n); byId[n.id] = n; }
-    const cx = W / 2, cy = H / 2;
     const spread = (dx, dy) => ({ x: cx + (Math.random()-0.5)*dx, y: cy + (Math.random()-0.5)*dy });
 
     (grafo.usuarios || []).forEach(u => { const p = spread(180,180); add({ id:u.id, label:u.label||u.id, type:"user", x:p.x, y:p.y, vx:0, vy:0, r:6 }); });
@@ -605,7 +606,10 @@
 
     function pos(e){
       const rect = canvas.getBoundingClientRect();
-      return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+      return {
+        x: (e.clientX - rect.left) * (W / rect.width),
+        y: (e.clientY - rect.top) * (H / rect.height)
+      };
     }
     function nodeAt(x, y){
       for(let i=nodes.length-1;i>=0;i--){
@@ -622,11 +626,14 @@
       card.className = "grafo-card " + (n.type === "central" ? "c" : "a");
       card.innerHTML = `<button class="x" aria-label="Cerrar">×</button><div class="t">${escapar(n.label)}</div><div class="d">${escapar(n.desc || "Sin descripción disponible.")}</div>`;
       wrap.appendChild(card);
+      const rect = canvas.getBoundingClientRect();
+      const sx = rect.width / W, sy = rect.height / H;
+      const nx = n.x * sx, ny = n.y * sy;
       const cw = card.offsetWidth || 250, chh = card.offsetHeight || 100;
-      let x = n.x + 18, y = n.y - chh/2;
-      if(x + cw > W - 10) x = n.x - cw - 18;
+      let x = nx + 18, y = ny - chh/2;
+      if(x + cw > rect.width - 10) x = nx - cw - 18;
       x = Math.max(10, x);
-      y = Math.max(10, Math.min(H - chh - 10, y));
+      y = Math.max(10, Math.min(rect.height - chh - 10, y));
       card.style.left = x + "px"; card.style.top = y + "px";
       card.querySelector(".x").addEventListener("click", hideCard);
     }
