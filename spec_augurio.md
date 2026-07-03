@@ -70,7 +70,7 @@ Existe y está configurado. Tres pestañas con encabezados en la fila 1:
 
 - **respuestas**: `timestamp`, `rol`, `q1_unica`, `q2_dolor`, `q3_proyecto`
 - **muestra**: `rol`, `q1_unica`, `q2_dolor`, `q3_proyecto`
-- **resultados**: `rol`, `posicion`, `comparativo`, `critica`, `colectivo_conclusion`, `colectivo_agrupamiento`
+- **resultados**: `rol`, `posicion`, `comparativo`, `critica`, `colectivo_conclusion`, `colectivo_agrupamiento`, `colectivo_grafo`
 
 La pestaña `muestra` contiene datos dummy en la fase de pruebas. Antes del taller debe poblarse a mano con diez respuestas externas de referencia que sirvan de contraste para el bloque personal.
 
@@ -94,24 +94,57 @@ const respuestas = $('respuestas').all().map(i => i.json);
 const muestra = $('muestra').all().map(i => i.json);
 
 const bloqueRespuestas = respuestas.map(r =>
-  `Rol: ${r.rol}\n1. Única: ${r.q1_unica}\n2. Dolor: ${r.q2_dolor}\n3. Proyecto: ${r.q3_proyecto}`
+  `[${r.rol}]\n1. Única: ${r.q1_unica}\n2. Dolor: ${r.q2_dolor}\n3. Proyecto: ${r.q3_proyecto}`
 ).join('\n\n');
 
 const bloqueMuestra = muestra.map(r =>
   `- Única: ${r.q1_unica} | Dolor: ${r.q2_dolor} | Proyecto: ${r.q3_proyecto}`
 ).join('\n');
 
-const prompt = `Eres un analista que sintetiza las respuestas de un grupo directivo universitario.
+const listaRoles = respuestas.map(r => r.rol).join(', ');
+
+const prompt = `Eres un analista senior que sintetiza las respuestas de un grupo directivo de la Universidad El Bosque en Bogotá. Este es un ejercicio de cognición aumentada: seis a diez personas respondieron en silencio tres preguntas y el sistema devuelve una lectura que ninguna de ellas produjo sola. Tu trabajo es hacer visible lo que emerge del conjunto y darle a cada persona una devolución honesta.
+
+Las tres preguntas fueron:
+1. Única: qué hace única a la Universidad El Bosque frente a las demás.
+2. Dolor: el dolor más importante que la Universidad debe resolverse a sí misma en 2026.
+3. Proyecto: el proyecto más importante que debe realizar en 2026.
 
 RESPUESTAS DEL GRUPO:
 ${bloqueRespuestas}
 
-MUESTRA EXTERNA DE REFERENCIA:
+MUESTRA EXTERNA DE REFERENCIA (voces de fuera del comité, para contraste):
 ${bloqueMuestra}
 
-Devuelve SOLO un JSON válido, sin texto adicional, con esta forma:
+Analiza y devuelve un objeto con tres partes: una lectura COLECTIVA, un GRAFO de agrupamiento y una lectura PERSONAL por cada participante.
+
+Para la parte COLECTIVA:
+- "conclusion": la síntesis de lo que emerge al leer las respuestas juntas. No resumas una por una; nombra el patrón de fondo, la idea que sobrevuela al grupo y que nadie escribió sola. Dos o tres frases densas, sin relleno.
+- "agrupamiento": cómo se agrupan las voces. Nombra las constelaciones (quiénes convergen y en torno a qué) y las tensiones (dónde el grupo se divide o se contradice). Puedes usar los roles para señalar los polos. Concreto, no genérico.
+
+Para el GRAFO de agrupamiento:
+- "ideasCentrales": entre 2 y 4 ideas que se repiten de verdad en las respuestas del grupo (cada una debe aparecer en al menos dos voces). Cada una con "id" ("c1", "c2"...), "label" corto de una a tres palabras, y "desc": un párrafo de 3 a 4 frases que diga qué es la idea, cómo aparece en las voces del grupo y qué tensión o pregunta carga.
+- "ideasAusentes": entre 2 y 3 temas relevantes para una universidad en 2026 que nadie del grupo mencionó. Cada una con "id" ("a1", "a2"...), "label" corto, y "desc": un párrafo de 3 a 4 frases que explique qué quedó fuera y por qué ese silencio importa.
+- "conexiones": pares { "from": rol, "to": id de idea central } que indican qué participante sostiene qué idea central en sus respuestas. Entre 1 y 3 conexiones por participante. Usa exactamente los roles de la lista (${listaRoles}) y los ids de "ideasCentrales". Las ideas ausentes no llevan conexiones.
+
+Para CADA participante, en el orden en que aparecen (${listaRoles}):
+- "rol": copia exactamente el identificador entre corchetes tal como aparece arriba. No lo traduzcas ni lo cambies.
+- "posicion": dónde se sitúa esta voz dentro del grupo. Con quién coincide, de quién se aparta, si ocupa un lugar central o un extremo. Habla del conjunto, no repitas su respuesta.
+- "comparativo": qué revela contrastar esta voz con la muestra externa. En qué se alinea con la mirada de afuera y en qué se distancia. Si aporta un ángulo que la muestra no tiene, dilo.
+- "critica": lectura afilada de su propuesta. Muestra el supuesto que la volvería frágil y la condición bajo la cual se sostiene. Sé exigente con la idea y cuidadoso con la persona: cuestiona el argumento, nunca a quien lo escribió.
+
+Reglas:
+- Responde en español.
+- Si una respuesta quedó demasiado corta, vaga o vacía, dilo con tacto ("la respuesta quedó escueta para leerla a fondo") en vez de inventar densidad que no estaba.
+- Devuelve una entrada en "personas" por cada rol del grupo, ni más ni menos.
+- Devuelve SOLO el JSON válido, sin texto antes ni después y sin bloques de código. Esta es la forma exacta:
 {
   "colectivo": { "conclusion": "", "agrupamiento": "" },
+  "grafo": {
+    "ideasCentrales": [ { "id": "c1", "label": "", "desc": "" } ],
+    "ideasAusentes": [ { "id": "a1", "label": "", "desc": "" } ],
+    "conexiones": [ { "from": "", "to": "" } ]
+  },
   "personas": [
     { "rol": "", "posicion": "", "comparativo": "", "critica": "" }
   ]
@@ -122,7 +155,7 @@ return [{
     prompt,
     payload: {
       model: "claude-sonnet-4-6",
-      max_tokens: 2000,
+      max_tokens: 8000,
       messages: [{ role: "user", content: prompt }]
     }
   }
@@ -145,6 +178,18 @@ try {
 
 const col = data.colectivo || {};
 
+// El grafo viaja como string JSON. "usuarios" no lo genera el modelo:
+// se inyecta aquí desde personas para garantizar ids exactos.
+let grafoStr = "";
+if (data.grafo && Array.isArray(data.grafo.ideasCentrales)) {
+  const g = data.grafo;
+  g.usuarios = data.personas.map(p => ({
+    id: p.rol,
+    label: p.rol.charAt(0).toUpperCase() + p.rol.slice(1)
+  }));
+  grafoStr = JSON.stringify(g);
+}
+
 return data.personas.map(p => ({
   json: {
     rol: p.rol,
@@ -152,12 +197,13 @@ return data.personas.map(p => ({
     comparativo: p.comparativo,
     critica: p.critica,
     colectivo_conclusion: col.conclusion,
-    colectivo_agrupamiento: col.agrupamiento
+    colectivo_agrupamiento: col.agrupamiento,
+    colectivo_grafo: grafoStr
   }
 }));
 ```
 
-- **Google Sheets · Append Row** en `resultados`, mapeo manual con cada campo del item.
+- **Google Sheets · Append or Update Row** en `resultados`, columna de coincidencia `rol`, mapeo manual con cada campo del item, incluido `colectivo_grafo`. (Antes era Append Row; se cambió para evitar filas duplicadas al reprocesar.)
 - **Respond to Webhook**: JSON `{ "ok": true }`.
 
 **Flujo 3. Lectura.**
@@ -191,6 +237,26 @@ Sistema aplicado en la web:
 - Acento verde `#17F7A1`, reservado para lo accionable y la crítica: botón de enviar, foco de los campos, marcador de la pregunta activa, botones del panel de facilitador y borde de la tarjeta de lectura crítica en la revelación.
 - Híbrido tipográfico: mayúsculas grandes para titulares y numeración, caja baja para lo que escriben y leen las personas, para que sea legible en respuestas largas.
 - Etiqueta ovalada en la esquina superior derecha muestra el usuario activo en tiempo real.
+
+### 3.5 Grafo de agrupamiento
+
+La vista de revelación dibuja el agrupamiento como un grafo de fuerzas en canvas: puntos blancos para participantes, verdes (`#17F7A1`) para ideas que se repiten, rosas (`#FF4885`) con anillo punteado para ideas ausentes. Clic en una idea abre una tarjeta con su descripción; los puntos se pueden arrastrar sin que se desconecten las líneas.
+
+Los datos viajan en la columna `colectivo_grafo` de `resultados` como string JSON con este contrato:
+
+```json
+{
+  "usuarios": [ { "id": "usuario1", "label": "Usuario1" } ],
+  "ideasCentrales": [ { "id": "c1", "label": "", "desc": "" } ],
+  "ideasAusentes": [ { "id": "a1", "label": "", "desc": "" } ],
+  "conexiones": [ { "from": "usuario1", "to": "c1" } ]
+}
+```
+
+Notas del contrato:
+- `usuarios` no lo genera el modelo: lo inyecta el nodo de parseo a partir de `personas`, para garantizar que los ids coincidan.
+- Cada `desc` es un párrafo de 3 a 4 frases.
+- Comportamiento de la web: si `colectivo_grafo` falta o no parsea, la revelación real oculta el grafo y muestra solo el texto de agrupamiento. El modo `?vista=revelacion&demo=1` usa una muestra embebida (`SAMPLE_GRAFO`) y datos de resultados de ejemplo, sin tocar n8n.
 
 ## 4. Trabajo pendiente
 
@@ -228,6 +294,8 @@ En la vista de revelación hay un panel al final con dos botones (`Generar mater
 La portada actual es funcional pero muy sobria. Se puede enriquecer con detalles del portafolio de Fabian: la flecha triangular a la izquierda, texto rotado más presente, alguna animación de entrada discreta. No es prioritario pero sumaría carácter.
 
 ### 4.7 Prevención de duplicados en `resultados`
+
+**Resuelto (2026-07-02)**: el nodo de escritura usa `Append or Update` con `rol` como columna de coincidencia, y la web además lee siempre la fila más reciente por rol. Se conserva el texto original como contexto.
 
 El Append actual acumula. Si el facilitador dispara el procesamiento dos veces, la pestaña `resultados` queda con filas duplicadas y la web mostraría el primer resultado que encuentre por usuario, que no siempre será el más reciente. Salidas posibles:
 

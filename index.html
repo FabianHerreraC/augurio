@@ -391,6 +391,15 @@
       cargando.classList.add("hidden");
 
       const ultimo = filas[filas.length - 1];
+
+      // Grafo real desde n8n (campo colectivo_grafo). Sin datos válidos,
+      // solo el modo demo muestra la muestra; la revelación real lo oculta.
+      let grafo = null;
+      try { grafo = ultimo.colectivo_grafo ? JSON.parse(ultimo.colectivo_grafo) : null; } catch(e){ grafo = null; }
+      const grafoValido = grafo && Array.isArray(grafo.usuarios) && grafo.usuarios.length
+        && Array.isArray(grafo.ideasCentrales) && grafo.ideasCentrales.length;
+      const grafoData = grafoValido ? grafo : (demo ? SAMPLE_GRAFO : null);
+
       colDiv.innerHTML = `
         <div class="kicker">Lectura colectiva</div>
         <h2 class="big">El grupo, en común.</h2>
@@ -400,6 +409,7 @@
         </div>
         <div class="block">
           <div class="lbl">Agrupamiento</div>
+          ${grafoData ? `
           <div class="grafo-wrap">
             <canvas id="grafo-canvas"></canvas>
             <div class="grafo-legend">
@@ -408,16 +418,14 @@
               <span><i class="dot a"></i> Idea ausente</span>
               <span class="hint">Clic en una idea para ver su descripción</span>
             </div>
-          </div>
-          <div class="content caption">${escapar(ultimo.colectivo_agrupamiento || "—")}</div>
+          </div>` : ``}
+          <div class="content ${grafoData ? "caption" : ""}">${escapar(ultimo.colectivo_agrupamiento || "—")}</div>
         </div>
       `;
 
-      let grafo = null;
-      try { grafo = ultimo.colectivo_grafo ? JSON.parse(ultimo.colectivo_grafo) : null; } catch(e){ grafo = null; }
       colDiv.classList.remove("hidden");
       divisor.classList.remove("hidden");
-      initGrafo(grafo && grafo.usuarios ? grafo : SAMPLE_GRAFO);
+      if(grafoData) initGrafo(grafoData);
 
       perDiv.innerHTML = `
         <div class="kicker">Lectura personal</div>
