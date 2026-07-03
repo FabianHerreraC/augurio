@@ -119,6 +119,7 @@
   .fac-row{display:flex;gap:10px;flex-wrap:wrap}
   .fac-row button{padding:10px 16px;border:1px solid var(--hair);border-radius:6px;font-size:13px;background:var(--field)}
   .fac-row button:hover{border-color:var(--accent);color:var(--accent)}
+  .fac-row button.danger:hover{border-color:#FF4885;color:#FF4885}
 
   .hidden{display:none !important}
 </style>
@@ -137,7 +138,8 @@
   const CFG = {
     captura:    "https://fabianh.app.n8n.cloud/webhook/augurio-captura",
     procesar:   "https://fabianh.app.n8n.cloud/webhook/augurio-procesar",
-    resultados: "https://fabianh.app.n8n.cloud/webhook/augurio-resultados"
+    resultados: "https://fabianh.app.n8n.cloud/webhook/augurio-resultados",
+    reset:      "https://fabianh.app.n8n.cloud/webhook/augurio-reset"
   };
   const ROLES = Array.from({length:10}, (_,i) => ({
     id: "usuario"+(i+1),
@@ -352,6 +354,7 @@
         <div class="fac-row">
           <button id="btn-procesar">Generar material aumentado</button>
           <button id="btn-recargar">Recargar resultados</button>
+          <button id="btn-reset" class="danger">Reiniciar ejercicio</button>
         </div>
         <div id="fac-msg" class="msg hidden"></div>
       </div>
@@ -359,6 +362,7 @@
 
     document.getElementById("btn-procesar").addEventListener("click", procesar);
     document.getElementById("btn-recargar").addEventListener("click", cargarResultados);
+    document.getElementById("btn-reset").addEventListener("click", resetear);
 
     cargarResultados();
   }
@@ -495,6 +499,25 @@
     } catch(err){
       facMsg.className = "msg err";
       facMsg.textContent = "Falló el procesamiento. ("+err.message+")";
+    }
+  }
+
+  async function resetear(){
+    const facMsg = document.getElementById("fac-msg");
+    const seguro = confirm("Esto borra TODAS las respuestas y los resultados del ejercicio. La muestra externa no se toca. ¿Reiniciar de cero?");
+    if(!seguro) return;
+    facMsg.className = "msg";
+    facMsg.textContent = "Reiniciando...";
+    facMsg.classList.remove("hidden");
+    try{
+      const r = await fetch(CFG.reset, { method:"POST" });
+      if(!r.ok) throw new Error("Error "+r.status);
+      facMsg.className = "msg ok";
+      facMsg.textContent = "Ejercicio reiniciado. Las hojas quedaron vacías.";
+      setTimeout(cargarResultados, 600);
+    } catch(err){
+      facMsg.className = "msg err";
+      facMsg.textContent = "No se pudo reiniciar. ("+err.message+")";
     }
   }
 

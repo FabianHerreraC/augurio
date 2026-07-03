@@ -47,7 +47,7 @@ El sistema devuelve dos capas de material.
 Tres piezas conectadas por webhooks:
 
 - **Google Sheets** llamado `augurio`, funciona como base de datos y como pizarra transparente del ejercicio.
-- **n8n** en la nube (`https://fabianh.app.n8n.cloud`), orquesta tres flujos independientes.
+- **n8n** en la nube (`https://fabianh.app.n8n.cloud`), orquesta cuatro flujos independientes.
 - **Web estática autocontenida**, un solo archivo HTML que sirve a los dos momentos del ejercicio.
 
 ### 2.2 Flujo de datos
@@ -55,6 +55,8 @@ Tres piezas conectadas por webhooks:
 **Captura.** Cada participante abre la web en la vista de captura, elige su usuario, responde las tres preguntas y envía. La web hace POST al webhook `augurio-captura`, que escribe la fila en la pestaña `respuestas` de Sheets.
 
 **Procesamiento.** El facilitador dispara desde la vista de revelación un POST al webhook `augurio-procesar`. Ese flujo lee todas las filas de `respuestas` y todas las de `muestra` (pre-cargada a mano antes del taller), arma un prompt único con ambos bloques, llama a la API de Anthropic, parsea el JSON de respuesta y escribe una fila por usuario en la pestaña `resultados`.
+
+**Reinicio.** El facilitador dispara desde el panel de la vista de revelación un POST al webhook `augurio-reset`, tras un diálogo de confirmación. Ese flujo borra los datos de `respuestas` y `resultados` desde la fila 2 (los encabezados se conservan) y no toca `muestra`. Sirve para ensayar varias veces y para empezar el ejercicio de cero.
 
 **Lectura.** La misma vista de revelación consulta por GET el webhook `augurio-resultados`, que devuelve el contenido completo de la pestaña `resultados`. La web muestra el bloque colectivo arriba, siempre visible, y despliega el bloque personal solo cuando el participante selecciona su usuario en un selector.
 
@@ -211,12 +213,20 @@ return data.personas.map(p => ({
 - **Google Sheets · Get Row(s)** de `resultados`, sin filtros.
 - **Respond to Webhook**: `All Incoming Items` o `{{ $json }}`.
 
+**Flujo 4. Reinicio.**
+- **Webhook**: POST, path `augurio-reset`, Respond en `Using Respond to Webhook node`.
+- **Google Sheets · Clear** sobre `respuestas`: Clear con rango específico `A2:E10000` (conserva la fila 1 de encabezados).
+- **Google Sheets · Clear** sobre `resultados`: Clear con rango específico `A2:G10000`, en serie después del anterior.
+- **Respond to Webhook**: JSON `{ "ok": true }`.
+- No toca la pestaña `muestra`.
+
 **URLs de producción confirmadas**:
 - Captura: `https://fabianh.app.n8n.cloud/webhook/augurio-captura`
 - Procesamiento: `https://fabianh.app.n8n.cloud/webhook/augurio-procesar`
 - Lectura: `https://fabianh.app.n8n.cloud/webhook/augurio-resultados`
+- Reinicio: `https://fabianh.app.n8n.cloud/webhook/augurio-reset`
 
-Los tres flujos deben quedar **activos** en n8n antes del taller. Sin activación, las URLs de producción no ejecutan.
+Los cuatro flujos deben quedar **activos** en n8n antes del taller. Sin activación, las URLs de producción no ejecutan.
 
 ### 3.3 Web estática
 
@@ -287,7 +297,7 @@ Hay una promesa de un modo de respaldo por si el flujo de procesamiento falla en
 
 ### 4.5 Panel de facilitador
 
-En la vista de revelación hay un panel al final con dos botones (`Generar material aumentado` y `Recargar resultados`), atenuado por defecto y que se resalta al pasar el mouse. Se puede ocultar tras una tecla o un parámetro para que no aparezca en el proyector, si se decide. Está a la vista para pragmatismo del día.
+En la vista de revelación hay un panel al final con tres botones (`Generar material aumentado`, `Recargar resultados` y `Reiniciar ejercicio`), atenuado por defecto y que se resalta al pasar el mouse. El de reinicio pide confirmación con un diálogo del navegador y se colorea rosa al pasar el mouse, para distinguir lo destructivo. Se puede ocultar tras una tecla o un parámetro para que no aparezca en el proyector, si se decide. Está a la vista para pragmatismo del día.
 
 ### 4.6 Estilo de la portada y detalles de motion
 
