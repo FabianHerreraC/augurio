@@ -680,7 +680,9 @@
         ctx.fillStyle = n.type === "user" ? "rgba(255,255,255,0.6)" : color;
         ctx.font = (n.type === "central" ? "600 " : "") + '11px "IBM Plex Mono", monospace';
         ctx.textAlign = "center";
-        ctx.fillText(n.label, n.x, n.y - n.r - 7);
+        const tw = ctx.measureText(n.label).width;
+        const tx = Math.max(6 + tw/2, Math.min(W - 6 - tw/2, n.x));
+        ctx.fillText(n.label, tx, n.y - n.r - 7);
       });
     }
 
