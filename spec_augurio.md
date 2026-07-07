@@ -238,14 +238,14 @@ Existe un archivo `augurio.html` autocontenido y funcional. Un solo HTML sin dep
 - `&fac=1` (en la raíz o en el alias), agrega el panel de facilitador (procesar, recargar, reiniciar). Sin `fac=1` el panel no se renderiza; es la URL que usa solo el facilitador.
 - Los logos viven en `assets/augurio-logo.png` y `assets/bosque-logo.png` (blancos sobre transparente; el de Augurio se invierte con CSS dentro de la caja blanca).
 
-Identificadores de usuario: `usuario1` a `usuario10`. Etiquetas visibles: `Usuario1` a `Usuario10`. El rol elegido se persiste en `localStorage` con la clave `augurio_rol`.
+Identificadores de usuario: los define el arreglo `ROLES` de `index.html`, único lugar a editar para renombrar participantes. Para la sesión con la alta dirección son iniciales reales (`Dr M.R.`, `Dr J.C.S.P`, `Dr J.G.M`, `Dra C.V.`, `Dra C.M.`, `Dr J.C.L`, `Dr C.F.E.`, `Ing R.G.`) más dos cupos genéricos (`usuario1`, `usuario2`). El id viaja tal cual en la columna `rol` de Sheets y de ahí al prompt y al grafo (id = etiqueta visible en los nombrados). Si se cambian los nombres, hay que reiniciar la base antes de la actividad para no mezclar roles viejos y nuevos. El rol elegido se persiste en `localStorage` con la clave `augurio_rol`; un rol guardado que ya no exista en `ROLES` simplemente se ignora.
 
 ### 3.4 Estética
 
 Referencia visual: el portafolio de Fabian Herrera, `https://fabianherrerac.github.io/`. Fondo negro casi total, tipografía grande en mayúsculas para titulares, numeración pequeña volada tipo `1. 2. 3.`, etiqueta ovalada blanca en la esquina superior derecha, texto rotado en el lomo izquierdo.
 
 Sistema aplicado en la web:
-- Fondo `#0A0A0A`, tinta `#FFFFFF`, gris de apoyo `#8A8A88`, línea `#242422`, campo `#141412`.
+- Fondo `#292929`, tinta `#FFFFFF`, gris de apoyo `#9A9A98`, línea `#454543`, campo `#1F1F1D`.
 - Acento verde `#17F7A1`, reservado para lo accionable y la crítica: botón de enviar, foco de los campos, marcador de la pregunta activa, botones del panel de facilitador y borde de la tarjeta de lectura crítica en la revelación.
 - Híbrido tipográfico: mayúsculas grandes para titulares y numeración, caja baja para lo que escriben y leen las personas, para que sea legible en respuestas largas.
 - Etiqueta ovalada en la esquina superior derecha muestra el usuario activo en tiempo real.
@@ -318,7 +318,7 @@ El Append actual acumula. Si el facilitador dispara el procesamiento dos veces, 
 ## 5. Convenciones y decisiones importantes
 
 - **Idioma**: todo el contenido visible al participante está en español.
-- **Roles**: identificador interno en minúscula (`usuario1`), etiqueta visible con la inicial en mayúscula (`Usuario1`). El identificador es la llave que empata Sheets, el prompt y el filtro en la web.
+- **Roles**: definidos solo en el arreglo `ROLES` de `index.html`; el id es la llave que empata Sheets, el prompt y el filtro en la web (la comparación es insensible a mayúsculas). Desde julio 2026 los ids son iniciales reales de los participantes (ver 3.3); renombrar exige reiniciar la base.
 - **JSON de Claude**: contrato inamovible en nombres de campos.
 - **Modelo Anthropic**: `claude-sonnet-4-6`, balance de velocidad y calidad para la ventana de tiempo del ejercicio en vivo.
 - **Estética**: mayúsculas para titulares, caja baja para contenido de personas, acento `#17F7A1` reservado, no decorativo.

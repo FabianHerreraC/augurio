@@ -167,10 +167,20 @@
     resultados: "https://fabianh.app.n8n.cloud/webhook/augurio-resultados",
     reset:      "https://fabianh.app.n8n.cloud/webhook/augurio-reset"
   };
-  const ROLES = Array.from({length:10}, (_,i) => ({
-    id: "usuario"+(i+1),
-    label: "Usuario " + String(i+1).padStart(2,"0")
-  }));
+  // El id viaja a Sheets en la columna "rol" y de ahí al prompt y al grafo;
+  // se usa tal cual como etiqueta de los puntos, por eso id = etiqueta visible.
+  const ROLES = [
+    { id: "Dr M.R.",    label: "Dr M.R." },
+    { id: "Dr J.C.S.P", label: "Dr J.C.S.P" },
+    { id: "Dr J.G.M",   label: "Dr J.G.M" },
+    { id: "Dra C.V.",   label: "Dra C.V." },
+    { id: "Dra C.M.",   label: "Dra C.M." },
+    { id: "Dr J.C.L",   label: "Dr J.C.L" },
+    { id: "Dr C.F.E.",  label: "Dr C.F.E." },
+    { id: "Ing R.G.",   label: "Ing R.G." },
+    { id: "usuario1",   label: "Usuario 01" },
+    { id: "usuario2",   label: "Usuario 02" }
+  ];
 
   // Grafo de agrupamiento. Estructura que el sistema debe devolver:
   //   usuarios: nodos de participantes
@@ -191,12 +201,12 @@
       { id:"a3", label:"Sostenibilidad financiera", desc:"La base económica que sostiene todo lo demás quedó fuera de la conversación. El grupo habló de identidad, de dolores y de proyectos, pero ninguna voz se preguntó con qué recursos se financia ese futuro ni cómo se diversifican los ingresos. Es la condición de posibilidad de todas las demás ideas, y nadie la puso sobre la mesa." }
     ],
     conexiones: [
-      { from:"usuario1", to:"c1" }, { from:"usuario1", to:"c2" },
-      { from:"usuario2", to:"c1" }, { from:"usuario2", to:"c3" },
-      { from:"usuario3", to:"c2" },
-      { from:"usuario4", to:"c1" }, { from:"usuario4", to:"c3" },
-      { from:"usuario5", to:"c3" },
-      { from:"usuario6", to:"c2" }, { from:"usuario6", to:"c1" }
+      { from:ROLES[0].id, to:"c1" }, { from:ROLES[0].id, to:"c2" },
+      { from:ROLES[1].id, to:"c1" }, { from:ROLES[1].id, to:"c3" },
+      { from:ROLES[2].id, to:"c2" },
+      { from:ROLES[3].id, to:"c1" }, { from:ROLES[3].id, to:"c3" },
+      { from:ROLES[4].id, to:"c3" },
+      { from:ROLES[5].id, to:"c2" }, { from:ROLES[5].id, to:"c1" }
     ]
   };
 
